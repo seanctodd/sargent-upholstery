@@ -10,11 +10,11 @@
       <ul>
         {{- range .Site.Menus.main }}
         <li{{ if .HasChildren }} class="has-dropdown"{{ end }}>
-          <a href="{{ .URL }}">{{ .Name }}</a>
+          <a href="{{ .URL }}"{{ if .HasChildren }} aria-haspopup="true" aria-expanded="false"{{ end }}>{{ .Name }}</a>
           {{- if .HasChildren }}
-          <ul class="dropdown">
+          <ul class="dropdown" role="menu">
             {{- range .Children }}
-            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            <li role="none"><a href="{{ .URL }}" role="menuitem">{{ .Name }}</a></li>
             {{- end }}
           </ul>
           {{- end }}

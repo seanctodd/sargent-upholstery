@@ -10,8 +10,8 @@ theme = 'sargent'
 
 [params]
   description = "Jacksonville's premier automotive upholstery shop — quality & service since 1935."
-  tagline = "Quality & Service Since 1935"
-  heroHeading = "Quality & Service Since 1935"
+  tagline = "Quality and Service Since 1935"
+  heroHeading = "Quality and Service Since 1935"
   heroSubheading = "Honoring America one stitch at a time!"
   address = "44 E 1st St, Jacksonville, FL 32206"
   phone = "904.355.2529"
@@ -48,7 +48,7 @@ theme = 'sargent'
 # Main navigation menu
 [[menus.main]]
   name = "Our Services"
-  url = "#"
+  url = "/service/"
   weight = 1
 
 [[menus.main]]
