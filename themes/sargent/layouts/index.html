@@ -4,7 +4,7 @@
     <div class="container hero-content">
       <h1>{{ .Site.Params.heroHeading | default "Quality & Service Since 1935" }}</h1>
       <p class="hero-sub">{{ .Site.Params.heroSubheading | default "Honoring America one stitch at a time!" }}</p>
-      <a href="/estimate/" class="btn btn-red">Get a Free Estimate</a>
+      <a href="{{ "estimate/" | relURL }}" class="btn btn-red">Get a Free Estimate</a>
     </div>
   </div>
 </section>
@@ -21,7 +21,7 @@
       {{ end }}
     </div>
     <div class="text-center" style="margin-top: 2rem;">
-      <a href="/our-services/" class="btn btn-navy">View All Services</a>
+      <a href="{{ "service/" | relURL }}" class="btn btn-navy">View All Services</a>
     </div>
   </div>
 </section>
@@ -54,7 +54,7 @@
   <div class="container text-center">
     <h2>Ready to Get Started?</h2>
     <p>Contact us today for a free estimate on your next upholstery project.</p>
-    <a href="/contact/" class="btn btn-red">Contact Us</a>
+    <a href="{{ "contact/" | relURL }}" class="btn btn-red">Contact Us</a>
   </div>
 </section>
 {{ end }}
