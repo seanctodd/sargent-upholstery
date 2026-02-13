@@ -7,4 +7,4 @@ description: "Request a free estimate from Sargent Upholstery Co."
 
 Fill out the form below and we'll get back to you as soon as possible. You can also call us directly at [904.355.2529](tel:904.355.2529).
 
-<iframe src="https://app.shopmonkey.cloud/public/quote-request/5ad2a930334fc4041540cffa?noExternalScripts=1" width="100%" height="700" frameborder="0"></iframe>
+<iframe src="https://app.shopmonkey.cloud/public/quote-request/5ad2a930334fc4041540cffa?noExternalScripts=1" title="Request a free estimate from Sargent Upholstery Co." width="100%" height="700" frameborder="0" loading="lazy"></iframe>
