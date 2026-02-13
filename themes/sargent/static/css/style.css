@@ -151,11 +151,16 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
+  height: 120px;
 }
 
 .logo img {
-  height: 50px;
+  height: 100px;
+  width: auto;
+}
+
+.footer-logo {
+  height: 150px;
   width: auto;
 }
 
@@ -623,9 +628,22 @@ p {
   color: var(--red);
 }
 
+.footer-col-logo {
+  text-align: center;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+}
+
 .social-links a {
-  display: block;
-  margin-bottom: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.social-links svg {
+  transition: color 0.2s;
 }
 
 .footer-bottom {
@@ -672,7 +690,7 @@ p {
   .site-nav {
     display: none;
     position: absolute;
-    top: 70px;
+    top: 120px;
     left: 0;
     right: 0;
     background: var(--navy);

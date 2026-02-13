@@ -1,11 +1,7 @@
 <header class="site-header">
   <div class="container header-inner">
     <a href="{{ "" | relURL }}" class="logo">
-      {{- with .Site.Params.logo }}
-      <img src="{{ . | relURL }}" alt="{{ $.Site.Title }}">
-      {{- else }}
-      <span class="logo-text">{{ .Site.Title }}</span>
-      {{- end }}
+      <img src="{{ "images/non-oval-logo-white.png" | relURL }}" alt="{{ .Site.Title }}">
     </a>
     <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
       <span class="hamburger"></span>

@@ -19,8 +19,7 @@ theme = 'sargent'
   logo = "images/logo.svg"
 
   facebook = "https://www.facebook.com/sargentupholstery"
-  instagram = "https://www.instagram.com/sargentupholstery"
-  twitter = "https://twitter.com/sargentupholstery"
+  instagram = "https://www.instagram.com/sargentupholsteryco"
 
   [[params.services]]
     title = "Automotive Carpets & Headliners"
