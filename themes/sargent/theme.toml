@@ -1,0 +1,6 @@
+name = "Sargent"
+license = "MIT"
+description = "Custom theme for Sargent Upholstery Co."
+
+[author]
+  name = "Sargent Upholstery Co."

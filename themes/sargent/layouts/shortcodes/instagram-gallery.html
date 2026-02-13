@@ -1,0 +1,122 @@
+{{- $username := .Get "username" | default "sargentupholsteryco" -}}
+{{- $count := .Get "count" | default 20 -}}
+{{- $apiURL := printf "https://i.instagram.com/api/v1/users/web_profile_info/?username=%s" $username -}}
+{{- $headers := dict "x-ig-app-id" "936619743392459" "User-Agent" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" -}}
+{{- $opts := dict "method" "GET" "headers" $headers -}}
+{{- $data := dict -}}
+{{- with resources.GetRemote $apiURL $opts -}}
+  {{- if .Err -}}
+    {{- warnf "Instagram fetch error: %s" .Err -}}
+  {{- else -}}
+    {{- $data = .Content | transform.Unmarshal -}}
+  {{- end -}}
+{{- end -}}
+<div class="ig-gallery">
+{{- with $data }}
+  {{- with .data }}
+    {{- with .user }}
+      {{- $edges := .edge_owner_to_timeline_media.edges -}}
+      {{- range $i, $e := first (int $count) $edges }}
+        {{- $node := .node -}}
+        {{- $src := $node.thumbnail_src | default $node.display_url -}}
+        {{- $caption := "" -}}
+        {{- with $node.edge_media_to_caption }}
+          {{- with .edges }}
+            {{- with index . 0 }}
+              {{- $caption = .node.text -}}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+        {{- $permalink := printf "https://www.instagram.com/p/%s/" $node.shortcode -}}
+        {{- if $src }}
+          {{- with resources.GetRemote $src }}
+            {{- if not .Err }}
+              {{- $img := . -}}
+              {{- if (strings.HasSuffix .MediaType.SubType "webp") }}
+                {{- $img = .Filter (images.Process "jpeg") -}}
+              {{- end }}
+              {{- $thumb := $img.Resize "640x640 jpg q85" -}}
+              {{- $large := $img.Resize "1200x jpg q90" -}}
+  <div class="ig-gallery-item" data-index="{{ $i }}" data-large="{{ $large.RelPermalink }}" data-caption="{{ $caption | htmlEscape }}" data-link="{{ $permalink }}">
+    <img src="{{ $thumb.RelPermalink }}" alt="{{ with $caption }}{{ . }}{{ else }}Instagram post by @{{ $username }}{{ end }}" loading="lazy">
+  </div>
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- else }}
+  <p class="ig-gallery-error">Could not load Instagram posts.</p>
+{{- end }}
+</div>
+
+<div class="ig-lightbox" id="ig-lightbox">
+  <button class="ig-lightbox-close" aria-label="Close">&times;</button>
+  <button class="ig-lightbox-prev" aria-label="Previous">&lsaquo;</button>
+  <button class="ig-lightbox-next" aria-label="Next">&rsaquo;</button>
+  <div class="ig-lightbox-content">
+    <img class="ig-lightbox-img" src="" alt="">
+    <div class="ig-lightbox-caption">
+      <a class="ig-lightbox-link" href="" target="_blank" rel="noopener"></a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var lightbox = document.getElementById('ig-lightbox');
+  var lbImg = lightbox.querySelector('.ig-lightbox-img');
+  var lbCaption = lightbox.querySelector('.ig-lightbox-link');
+  var lbCaptionWrap = lightbox.querySelector('.ig-lightbox-caption');
+  var items = document.querySelectorAll('.ig-gallery-item[data-large]');
+  var current = 0;
+
+  function show(index) {
+    if (index < 0) index = items.length - 1;
+    if (index >= items.length) index = 0;
+    current = index;
+    var item = items[index];
+    lbImg.src = item.getAttribute('data-large');
+    lbImg.alt = item.getAttribute('data-caption') || 'Instagram post';
+    var caption = item.getAttribute('data-caption');
+    var link = item.getAttribute('data-link');
+    if (caption) {
+      lbCaption.textContent = caption;
+      lbCaption.href = link;
+      lbCaptionWrap.style.display = '';
+    } else {
+      lbCaption.textContent = 'View on Instagram';
+      lbCaption.href = link;
+      lbCaptionWrap.style.display = '';
+    }
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  items.forEach(function (item, i) {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', function () { show(i); });
+  });
+
+  lightbox.querySelector('.ig-lightbox-close').addEventListener('click', close);
+  lightbox.querySelector('.ig-lightbox-prev').addEventListener('click', function () { show(current - 1); });
+  lightbox.querySelector('.ig-lightbox-next').addEventListener('click', function () { show(current + 1); });
+
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) close();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
+  });
+})();
+</script>

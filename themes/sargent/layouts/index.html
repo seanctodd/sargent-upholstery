@@ -1,0 +1,60 @@
+{{ define "main" }}
+<section class="hero">
+  <div class="hero-overlay">
+    <div class="container hero-content">
+      <h1>{{ .Site.Params.heroHeading | default "Quality & Service Since 1935" }}</h1>
+      <p class="hero-sub">{{ .Site.Params.heroSubheading | default "Honoring America one stitch at a time!" }}</p>
+      <a href="/estimate/" class="btn btn-red">Get a Free Estimate</a>
+    </div>
+  </div>
+</section>
+
+<section class="services-section">
+  <div class="container">
+    <h2 class="section-heading">Our Services</h2>
+    <div class="services-grid">
+      {{ range .Site.Params.services }}
+      <div class="service-card">
+        <h3>{{ .title }}</h3>
+        <p>{{ .description }}</p>
+      </div>
+      {{ end }}
+    </div>
+    <div class="text-center" style="margin-top: 2rem;">
+      <a href="/our-services/" class="btn btn-navy">View All Services</a>
+    </div>
+  </div>
+</section>
+
+<section class="amenities-section">
+  <div class="container">
+    <h2 class="section-heading">Why Choose Us</h2>
+    <div class="amenities-grid">
+      <div class="amenity">
+        <h3>Family Owned Since 1935</h3>
+        <p>Three generations of the Todd family delivering expert craftsmanship.</p>
+      </div>
+      <div class="amenity">
+        <h3>Free Estimates</h3>
+        <p>Bring your vehicle in for a no-obligation consultation and quote.</p>
+      </div>
+      <div class="amenity">
+        <h3>Customer Lounge</h3>
+        <p>Relax in our comfortable lounge while we work on your vehicle.</p>
+      </div>
+      <div class="amenity">
+        <h3>Complimentary Shuttle</h3>
+        <p>Free shuttle service available in downtown Jacksonville.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container text-center">
+    <h2>Ready to Get Started?</h2>
+    <p>Contact us today for a free estimate on your next upholstery project.</p>
+    <a href="/contact/" class="btn btn-red">Contact Us</a>
+  </div>
+</section>
+{{ end }}

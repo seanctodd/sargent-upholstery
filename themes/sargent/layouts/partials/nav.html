@@ -1,0 +1,30 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">
+      {{- with .Site.Params.logo }}
+      <img src="{{ . }}" alt="{{ $.Site.Title }}">
+      {{- else }}
+      <span class="logo-text">{{ .Site.Title }}</span>
+      {{- end }}
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span class="hamburger"></span>
+    </button>
+    <nav class="site-nav" id="site-nav">
+      <ul>
+        {{- range .Site.Menus.main }}
+        <li{{ if .HasChildren }} class="has-dropdown"{{ end }}>
+          <a href="{{ .URL }}">{{ .Name }}</a>
+          {{- if .HasChildren }}
+          <ul class="dropdown">
+            {{- range .Children }}
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
+            {{- end }}
+          </ul>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ul>
+    </nav>
+  </div>
+</header>

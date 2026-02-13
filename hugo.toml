@@ -1,0 +1,90 @@
+baseURL = 'https://sargentupholstery.com/'
+languageCode = 'en-us'
+title = 'Sargent Upholstery Co.'
+theme = 'sargent'
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[params]
+  description = "Jacksonville's premier automotive upholstery shop — quality & service since 1935."
+  tagline = "Quality & Service Since 1935"
+  heroHeading = "Quality & Service Since 1935"
+  heroSubheading = "Honoring America one stitch at a time!"
+  address = "44 E 1st St, Jacksonville, FL 32206"
+  phone = "904.355.2529"
+  email = "sales@sargentupholstery.com"
+  # logo = "/images/logo.png"
+
+  facebook = "https://www.facebook.com/sargentupholstery"
+  instagram = "https://www.instagram.com/sargentupholstery"
+  twitter = "https://twitter.com/sargentupholstery"
+
+  [[params.services]]
+    title = "Automotive Carpets & Headliners"
+    description = "Custom-fit carpet and headliner replacement for all makes and models."
+
+  [[params.services]]
+    title = "Convertible Tops"
+    description = "Expert convertible top replacement and repair using premium materials."
+
+  [[params.services]]
+    title = "Custom Upholstery"
+    description = "Full interior upholstery — seats, door panels, dashboards, and more."
+
+  [[params.services]]
+    title = "Custom Canvas"
+    description = "Durable custom canvas work for boats, trucks, and specialty vehicles."
+
+  [[params.services]]
+    title = "Leather Interiors"
+    description = "Premium leather interior installation and restoration."
+
+  [[params.services]]
+    title = "Commercial Truck Seating"
+    description = "Heavy-duty seating solutions for commercial and fleet vehicles."
+
+# Main navigation menu
+[[menus.main]]
+  name = "Our Services"
+  url = "#"
+  weight = 1
+
+[[menus.main]]
+  name = "Automotive"
+  parent = "Our Services"
+  url = "/service/automotive/"
+  weight = 1
+
+[[menus.main]]
+  name = "Fleet Services"
+  parent = "Our Services"
+  url = "/service/fleet-services/"
+  weight = 2
+
+[[menus.main]]
+  name = "Get an Estimate"
+  url = "/estimate/"
+  weight = 2
+
+[[menus.main]]
+  name = "Gallery"
+  url = "/gallery/"
+  weight = 3
+
+[[menus.main]]
+  name = "Our History"
+  url = "/our-history/"
+  weight = 4
+
+[[menus.main]]
+  name = "Contact"
+  url = "/contact/"
+  weight = 5
+
+[[menus.main]]
+  name = "FAQ"
+  url = "/faq/"
+  weight = 6
