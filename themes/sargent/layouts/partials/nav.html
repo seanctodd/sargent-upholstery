@@ -1,8 +1,8 @@
 <header class="site-header">
   <div class="container header-inner">
-    <a href="{{ "/" | relURL }}" class="logo">
+    <a href="{{ "" | relURL }}" class="logo">
       {{- with .Site.Params.logo }}
-      <img src="{{ . }}" alt="{{ $.Site.Title }}">
+      <img src="{{ . | relURL }}" alt="{{ $.Site.Title }}">
       {{- else }}
       <span class="logo-text">{{ .Site.Title }}</span>
       {{- end }}

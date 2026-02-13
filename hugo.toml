@@ -16,7 +16,7 @@ theme = 'sargent'
   address = "44 E 1st St, Jacksonville, FL 32206"
   phone = "904.355.2529"
   email = "sales@sargentupholstery.com"
-  # logo = "/images/logo.png"
+  logo = "images/logo.svg"
 
   facebook = "https://www.facebook.com/sargentupholstery"
   instagram = "https://www.instagram.com/sargentupholstery"
