@@ -1,6 +1,7 @@
 ---
 title: "FAQ"
 description: "Frequently asked questions about Sargent Upholstery Co. services."
+heroImage: "images/heroes/faq.jpg"
 ---
 
 ## Frequently Asked Questions

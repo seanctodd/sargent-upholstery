@@ -1,6 +1,7 @@
 ---
 title: "Gallery"
 description: "See examples of our custom upholstery, convertible tops, leather interiors, and more."
+heroImage: "images/heroes/contact.jpg"
 ---
 
 ## Our Work

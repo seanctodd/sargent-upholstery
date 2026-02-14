@@ -1,5 +1,5 @@
 {{ define "main" }}
-<section class="hero">
+<section class="hero"{{ with .Params.heroImage }} style="background-image: url('{{ . | relURL }}')"{{ end }}>
   <div class="hero-overlay">
     <div class="container hero-content">
       <h1>{{ .Site.Params.heroHeading | default "Quality & Service Since 1935" }}</h1>

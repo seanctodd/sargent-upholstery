@@ -1,6 +1,7 @@
 ---
 title: "Automotive"
 description: "Convertible tops, headliners, custom seat covers, leather kits, automotive carpet, and more from Sargent Upholstery Co."
+heroImage: "images/heroes/automotive.jpg"
 ---
 
 ## Convertible Tops

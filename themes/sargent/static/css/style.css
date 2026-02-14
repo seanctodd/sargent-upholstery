@@ -289,6 +289,8 @@ p {
    ========================================================================== */
 .hero {
   background: var(--navy);
+  background-size: cover;
+  background-position: center;
   min-height: 500px;
   display: flex;
   align-items: center;
@@ -297,6 +299,7 @@ p {
 .hero-overlay {
   width: 100%;
   padding: 4rem 0;
+  background: rgba(27, 45, 88, 0.7);
 }
 
 .hero-content {
@@ -320,7 +323,13 @@ p {
 /* Page Hero (inner pages) */
 .page-hero {
   background: var(--navy);
+  background-size: cover;
+  background-position: center;
+}
+
+.page-hero .hero-overlay {
   padding: 3rem 0;
+  background: rgba(27, 45, 88, 0.7);
 }
 
 .page-hero h1 {
