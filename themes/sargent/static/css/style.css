@@ -47,12 +47,14 @@ a:hover {
 
 a:focus-visible,
 .btn:focus-visible,
-.nav-toggle:focus-visible {
+.nav-toggle:focus-visible,
+.dropdown-label:focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 2px;
 }
 
-.site-nav a:focus-visible {
+.site-nav a:focus-visible,
+.site-nav .dropdown-label:focus-visible {
   outline-color: var(--white);
 }
 
@@ -236,11 +238,13 @@ p {
   white-space: nowrap;
 }
 
-/* Hamburger */
+/* Hamburger (CSS-only toggle) */
+.nav-toggle-checkbox {
+  display: none;
+}
+
 .nav-toggle {
   display: none;
-  background: none;
-  border: none;
   cursor: pointer;
   padding: 0.5rem;
 }
@@ -253,7 +257,7 @@ p {
   height: 3px;
   background: var(--white);
   border-radius: 2px;
-  transition: transform 0.3s;
+  transition: transform 0.3s, background 0.3s;
 }
 
 .hamburger {
@@ -270,19 +274,45 @@ p {
 .hamburger::before { top: -7px; }
 .hamburger::after  { top:  7px; }
 
-/* Active hamburger */
-.nav-toggle[aria-expanded="true"] .hamburger {
+/* Active hamburger (checkbox checked) */
+.nav-toggle-checkbox:checked + .nav-toggle .hamburger {
   background: transparent;
 }
 
-.nav-toggle[aria-expanded="true"] .hamburger::before {
+.nav-toggle-checkbox:checked + .nav-toggle .hamburger::before {
   top: 0;
   transform: rotate(45deg);
 }
 
-.nav-toggle[aria-expanded="true"] .hamburger::after {
+.nav-toggle-checkbox:checked + .nav-toggle .hamburger::after {
   top: 0;
   transform: rotate(-45deg);
+}
+
+/* Show nav when checkbox is checked */
+.nav-toggle-checkbox:checked ~ .site-nav {
+  display: block;
+}
+
+/* Dropdown checkbox (CSS-only submenu toggle) */
+.dropdown-checkbox {
+  display: none;
+}
+
+.dropdown-label {
+  color: var(--white);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.5rem 0.75rem;
+  display: block;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.dropdown-label:hover {
+  color: var(--red);
 }
 
 /* ==========================================================================
@@ -832,7 +862,8 @@ p {
    Responsive
    ========================================================================== */
 @media (max-width: 1024px) and (min-width: 769px) {
-  .site-nav a {
+  .site-nav a,
+  .dropdown-label {
     font-size: 0.8rem;
     padding: 0.5rem 0.5rem;
   }
@@ -896,15 +927,12 @@ p {
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   }
 
-  .site-nav.open {
-    display: block;
-  }
-
   .site-nav ul {
     flex-direction: column;
   }
 
-  .site-nav a {
+  .site-nav a,
+  .dropdown-label {
     padding: 0.85rem 1.5rem;
   }
 
@@ -912,10 +940,14 @@ p {
     position: static;
     border-top: none;
     box-shadow: none;
+    display: none;
   }
 
-  .has-dropdown:hover .dropdown,
-  .has-dropdown.dropdown-open .dropdown {
+  .has-dropdown:hover .dropdown {
+    display: flex;
+  }
+
+  .dropdown-checkbox:checked ~ .dropdown {
     display: flex;
   }
 

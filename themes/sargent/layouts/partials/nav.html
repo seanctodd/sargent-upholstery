@@ -3,20 +3,24 @@
     <a href="{{ "" | relURL }}" class="logo">
       <img src="{{ "images/non-oval-logo-white.png" | relURL }}" alt="{{ .Site.Title }}">
     </a>
-    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+    <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox" aria-label="Toggle navigation">
+    <label for="nav-toggle" class="nav-toggle">
       <span class="hamburger"></span>
-    </button>
+    </label>
     <nav class="site-nav" id="site-nav" aria-label="Main navigation">
       <ul>
         {{- range .Site.Menus.main }}
         <li{{ if .HasChildren }} class="has-dropdown"{{ end }}>
-          <a href="{{ .URL }}"{{ if .HasChildren }} aria-haspopup="true" aria-expanded="false"{{ end }}>{{ .Name }}</a>
           {{- if .HasChildren }}
+          <input type="checkbox" id="dropdown-{{ .Name | urlize }}" class="dropdown-checkbox" aria-label="Toggle {{ .Name }} submenu">
+          <label for="dropdown-{{ .Name | urlize }}" class="dropdown-label">{{ .Name }}</label>
           <ul class="dropdown" role="menu">
             {{- range .Children }}
             <li role="none"><a href="{{ .URL }}" role="menuitem">{{ .Name }}</a></li>
             {{- end }}
           </ul>
+          {{- else }}
+          <a href="{{ .URL }}">{{ .Name }}</a>
           {{- end }}
         </li>
         {{- end }}
