@@ -79,6 +79,7 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 1.2;
+  overflow-wrap: break-word;
 }
 
 h1 { font-size: 2.5rem; margin-bottom: 1rem; }
@@ -768,11 +769,31 @@ p {
 }
 
 @media (max-width: 768px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
+  h1 { font-size: 1.75rem; letter-spacing: 0.02em; }
+  h2 { font-size: 1.35rem; }
 
-  .hero-content h1 { font-size: 2.25rem; }
-  .hero-sub { font-size: 1.1rem; }
+  .header-inner {
+    height: 80px;
+  }
+
+  .logo img {
+    height: 65px;
+  }
+
+  .hero {
+    min-height: 350px;
+  }
+
+  .hero-content h1 { font-size: 1.75rem; letter-spacing: 0.02em; }
+  .hero-sub { font-size: 1rem; }
+
+  .hero-overlay {
+    padding: 2.5rem 0;
+  }
+
+  .page-hero .hero-overlay {
+    padding: 2rem 0;
+  }
 
   .nav-toggle {
     display: block;
@@ -781,7 +802,7 @@ p {
   .site-nav {
     display: none;
     position: absolute;
-    top: 120px;
+    top: 80px;
     left: 0;
     right: 0;
     background: var(--navy);
@@ -816,16 +837,28 @@ p {
     padding-left: 2.5rem;
   }
 
+  .services-section {
+    padding: 3rem 0;
+  }
+
   .services-grid {
     grid-template-columns: 1fr;
   }
 
-  .ig-gallery {
-    grid-template-columns: repeat(2, 1fr);
+  .amenities-section {
+    padding: 3rem 0;
   }
 
   .amenities-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+  }
+
+  .cta-section {
+    padding: 3rem 0;
+  }
+
+  .ig-gallery {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .contact-grid {
@@ -834,5 +867,13 @@ p {
 
   .footer-grid {
     grid-template-columns: 1fr;
+  }
+
+  .footer-logo {
+    height: 100px;
+  }
+
+  .map-embed iframe {
+    height: 300px;
   }
 }
