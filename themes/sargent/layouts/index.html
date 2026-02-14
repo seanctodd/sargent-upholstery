@@ -1,9 +1,9 @@
 {{ define "main" }}
-<section class="hero"{{ with .Params.heroImage }} style="background-image: url('{{ . | relURL }}')"{{ end }}>
+<section class="page-hero"{{ with .Params.heroImage }} style="background-image: url('{{ . | relURL }}')"{{ end }}>
   <div class="hero-overlay">
     <div class="container hero-content">
       <h1>{{ .Site.Params.heroHeading | default "Quality & Service Since 1935" }}</h1>
-      <p class="hero-sub">{{ .Site.Params.heroSubheading | default "Honoring America one stitch at a time!" }}</p>
+      <p class="hero-sub">{{ .Site.Params.heroSubheading | default "Quality and Service Since 1935" }}</p>
       <a href="{{ "estimate/" | relURL }}" class="btn btn-red">Get a Free Estimate</a>
     </div>
   </div>
@@ -22,6 +22,9 @@
     </div>
     <div class="text-center services-cta">
       <a href="{{ "service/" | relURL }}" class="btn btn-navy">View All Services</a>
+    </div>
+    <div class="video-embed">
+      <iframe src="https://www.youtube.com/embed/1Qc63s6237c" title="Sargent Upholstery Co." loading="lazy" allowfullscreen></iframe>
     </div>
   </div>
 </section>
@@ -49,6 +52,8 @@
     </div>
   </div>
 </section>
+
+{{ partial "reviews.html" . }}
 
 <section class="cta-section">
   <div class="container text-center">

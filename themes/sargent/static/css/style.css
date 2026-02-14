@@ -372,6 +372,27 @@ p {
   margin-top: 2rem;
 }
 
+.video-embed {
+  margin-top: 3rem;
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 4px;
+}
+
+.video-embed iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 /* ==========================================================================
    Amenities Section
    ========================================================================== */
@@ -596,6 +617,58 @@ p {
   font-size: 3.5rem;
 }
 
+/* Reviews Section */
+.reviews-section {
+  padding: 5rem 0;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.review-card {
+  background: var(--white);
+  border: 1px solid var(--mid-gray);
+  border-top: 4px solid var(--red);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.review-stars {
+  color: #f5a623;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.75rem;
+}
+
+.review-text {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.review-author {
+  display: block;
+  font-weight: 700;
+  font-style: normal;
+  color: var(--navy);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.review-source {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.reviews-cta {
+  margin-top: 1.5rem;
+}
+
 /* Estimate Form */
 .form-group {
   margin-bottom: 1.5rem;
@@ -771,6 +844,10 @@ p {
   .ig-gallery {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  .reviews-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -855,6 +932,14 @@ p {
   }
 
   .amenities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reviews-section {
+    padding: 3rem 0;
+  }
+
+  .reviews-grid {
     grid-template-columns: 1fr;
   }
 

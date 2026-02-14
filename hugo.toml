@@ -68,6 +68,12 @@ theme = 'sargent'
   weight = 2
 
 [[menus.main]]
+  name = "Marine"
+  parent = "Our Services"
+  url = "/service/marine/"
+  weight = 3
+
+[[menus.main]]
   name = "Get an Estimate"
   url = "/estimate/"
   weight = 2

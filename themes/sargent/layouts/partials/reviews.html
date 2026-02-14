@@ -1,0 +1,32 @@
+{{- $reviews := site.Data.reviews -}}
+{{- if $reviews -}}
+{{- $shuffled := shuffle $reviews -}}
+{{- $selected := first 4 $shuffled -}}
+<section class="reviews-section">
+  <div class="container">
+    <h2 class="section-heading">What Our Customers Say</h2>
+    <div class="reviews-grid">
+      {{- range $selected }}
+      <div class="review-card">
+        <div class="review-stars">
+          {{- range seq 5 }}&#9733;{{ end -}}
+        </div>
+        <blockquote class="review-text">
+          {{- $text := .text -}}
+          {{- if gt (len $text) 200 -}}
+            {{ printf "%.200s" $text }}&hellip;
+          {{- else -}}
+            {{ $text }}
+          {{- end -}}
+        </blockquote>
+        <cite class="review-author">{{ .author }}</cite>
+        <span class="review-source">Google Review</span>
+      </div>
+      {{- end }}
+    </div>
+    <div class="text-center reviews-cta">
+      <a href="https://www.google.com/maps/place/Sargent+Upholstery+Co./@30.3321,-81.6528,17z/" class="btn btn-navy" target="_blank" rel="noopener">See All Reviews on Google</a>
+    </div>
+  </div>
+</section>
+{{- end -}}
