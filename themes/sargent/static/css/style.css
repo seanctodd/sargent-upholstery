@@ -358,6 +358,10 @@ p {
   margin-bottom: 0.75rem;
 }
 
+.services-cta {
+  margin-top: 2rem;
+}
+
 /* ==========================================================================
    Amenities Section
    ========================================================================== */
@@ -628,7 +632,7 @@ p {
   gap: 2rem;
 }
 
-.site-footer h3 {
+.footer-heading {
   color: var(--white);
   font-size: 1rem;
   margin-bottom: 1rem;
@@ -672,6 +676,69 @@ p {
 
 .footer-bottom a {
   color: rgba(255,255,255,0.6);
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--red);
+  color: var(--white);
+  padding: 0.5rem 1rem;
+  z-index: 2000;
+  font-weight: 600;
+  border-radius: 0 0 3px 3px;
+}
+
+.skip-link:focus {
+  top: 0;
+  color: var(--white);
+}
+
+/* Embedded iframes (maps, forms) */
+.map-embed iframe,
+.estimate-form iframe {
+  border: none;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+@media print {
+  .site-header,
+  .nav-toggle,
+  .site-nav,
+  .skip-link,
+  .social-links,
+  .cta-section {
+    display: none !important;
+  }
+
+  .site-footer {
+    background: none;
+    color: var(--text);
+    padding: 1rem 0;
+  }
+
+  .footer-heading {
+    color: var(--navy);
+  }
+
+  .site-footer a {
+    color: var(--text);
+  }
+
+  body {
+    font-size: 12pt;
+    color: #000;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
 }
 
 /* ==========================================================================

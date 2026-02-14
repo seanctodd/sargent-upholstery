@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://seanctodd.github.io/sargent-upholstery/sitemap.xml

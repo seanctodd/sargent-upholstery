@@ -1,0 +1,23 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "{{ .Site.Title }}",
+  "description": "{{ .Site.Params.description }}",
+  "url": "{{ .Site.BaseURL }}",
+  "telephone": "{{ .Site.Params.phone }}",
+  "email": "{{ .Site.Params.email }}",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "44 E 1st St",
+    "addressLocality": "Jacksonville",
+    "addressRegion": "FL",
+    "postalCode": "32206",
+    "addressCountry": "US"
+  },
+  "sameAs": [
+    {{- with .Site.Params.facebook }}"{{ . }}"{{ end }}
+    {{- with .Site.Params.instagram }}, "{{ . }}"{{ end }}
+  ]
+}
+</script>

@@ -3,6 +3,9 @@ languageCode = 'en-us'
 title = 'Sargent Upholstery Co.'
 theme = 'sargent'
 
+[outputs]
+  home = ["HTML", "RSS"]
+
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
@@ -20,6 +23,7 @@ theme = 'sargent'
 
   facebook = "https://www.facebook.com/sargentupholstery"
   instagram = "https://www.instagram.com/sargentupholsteryco"
+  instagramUsername = "sargentupholsteryco"
 
   [[params.services]]
     title = "Automotive Carpets & Headliners"

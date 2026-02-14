@@ -6,7 +6,7 @@
     <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
       <span class="hamburger"></span>
     </button>
-    <nav class="site-nav" id="site-nav">
+    <nav class="site-nav" id="site-nav" aria-label="Main navigation">
       <ul>
         {{- range .Site.Menus.main }}
         <li{{ if .HasChildren }} class="has-dropdown"{{ end }}>
