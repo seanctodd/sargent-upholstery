@@ -14,4 +14,4 @@ Since 1935, Sargent Upholstery Co. has provided Jacksonville with expert automot
 - **Automotive Carpet** — Custom-ordered poly or mass backed carpets
 - **Commercial Fleet Services** — Competitive pricing and quick turnaround for work trucks, vans, and cars
 
-[Get a Free Estimate](/estimate/) or call us at **904.355.2529** to discuss your project.
+[Get a Free Estimate]({{< ref "/estimate" >}}) or call us at **904.355.2529** to discuss your project.
