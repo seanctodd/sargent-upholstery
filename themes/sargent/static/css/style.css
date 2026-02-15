@@ -165,7 +165,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 120px;
+  height: 170px;
 }
 
 .logo img {
@@ -890,11 +890,11 @@ p {
   h2 { font-size: 1.35rem; }
 
   .header-inner {
-    height: 80px;
+    height: 110px;
   }
 
   .logo img {
-    height: 65px;
+    height: 98px;
   }
 
   .hero {
@@ -919,7 +919,7 @@ p {
   .site-nav {
     display: none;
     position: absolute;
-    top: 80px;
+    top: 110px;
     left: 0;
     right: 0;
     background: var(--navy);
