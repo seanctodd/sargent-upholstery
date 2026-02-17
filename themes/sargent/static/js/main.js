@@ -5,7 +5,7 @@
       iframe.src = 'https://www.youtube.com/embed/' + el.dataset.videoid + '?autoplay=1';
       iframe.title = el.getAttribute('aria-label').replace('Play: ', '');
       iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
-      iframe.allowFullscreen = true;
+      iframe.setAttribute('allowfullscreen', '');
       iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none';
       el.textContent = '';
       el.appendChild(iframe);

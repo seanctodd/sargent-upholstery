@@ -163,12 +163,6 @@ func extractReviews(data []byte) []Review {
 	if probe.Result != nil {
 		return extractLegacy(data)
 	}
-	if len(probe.Reviews) > 0 {
-		// Fallback: treat as legacy format with reviews at top level
-		wrapped := fmt.Sprintf(`{"result":{"reviews":%s}}`, probe.Reviews)
-		_ = wrapped // not applicable since reviews is []RawMessage
-		return extractLegacy(data)
-	}
 	return nil
 }
 

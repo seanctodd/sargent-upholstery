@@ -1,6 +1,7 @@
 ---
 title: "Marine"
 description: "Custom marine upholstery, boat covers, canvas work, and interior restoration from Sargent Upholstery Co. in Jacksonville, FL."
+heroImage: "images/heroes/automotive.webp"
 ---
 
 ## Built to Handle Life on the Water

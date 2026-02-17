@@ -10,7 +10,7 @@ heroImage: "images/heroes/faq.webp"
 
 ### Do I need an appointment?
 
-Yes, Sargent Upholstery operates by appointment only. Please call us at [904.355.2529](tel:904.355.2529) or email [sales@sargentupholstery.com](mailto:sales@sargentupholstery.com) to schedule your visit.
+No appointment is needed — walk-ins are welcome during business hours. Feel free to stop by anytime Monday through Friday, 8:00 AM – 4:30 PM. You can also call us at [904.355.2529](tel:+19043552529) or email [sales@sargentupholstery.com](mailto:sales@sargentupholstery.com) if you'd like to schedule a specific time.
 
 </div>
 
@@ -18,7 +18,7 @@ Yes, Sargent Upholstery operates by appointment only. Please call us at [904.355
 
 ### Do you offer free estimates?
 
-Yes! We offer free, no-obligation estimates. Bring your vehicle by during your appointment and we'll assess the work needed and provide a detailed quote.
+Yes! We offer free, no-obligation estimates. Bring your vehicle by during business hours and we'll assess the work needed and provide a detailed quote.
 
 </div>
 

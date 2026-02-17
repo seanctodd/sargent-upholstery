@@ -2,22 +2,26 @@
 {{- if $reviews -}}
 {{- $fivestar := where $reviews "rating" 5 -}}
 {{- if $fivestar -}}
+{{- $shuffled := shuffle $fivestar -}}
+{{- $selected := first 4 $shuffled -}}
 <section class="reviews-section">
   <div class="container">
     <h2 class="section-heading">What Our Customers Say</h2>
-    <div class="reviews-grid" id="reviews-grid">
-      {{- range $fivestar }}
-      <div class="review-card" style="display:none">
+    <div class="reviews-grid">
+      {{- range $selected }}
+      <div class="review-card">
         <div class="review-stars">
           {{- range seq 5 }}&#9733;{{ end -}}
         </div>
         <blockquote class="review-text">
+          <p>
           {{- $text := .text -}}
           {{- if gt (len $text) 200 -}}
             {{ printf "%.200s" $text }}&hellip;
           {{- else -}}
             {{ $text }}
           {{- end -}}
+          </p>
         </blockquote>
         <cite class="review-author">{{ .author }}</cite>
         <span class="review-source">Google Review</span>
@@ -29,17 +33,5 @@
     </div>
   </div>
 </section>
-<script>
-(function () {
-  var cards = Array.prototype.slice.call(document.querySelectorAll('#reviews-grid .review-card'));
-  for (var i = cards.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
-  }
-  cards.slice(0, 4).forEach(function (card) {
-    card.style.display = '';
-  });
-})();
-</script>
 {{- end -}}
 {{- end -}}

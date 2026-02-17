@@ -318,15 +318,6 @@ p {
 /* ==========================================================================
    Hero Section
    ========================================================================== */
-.hero {
-  background: var(--navy);
-  background-size: cover;
-  background-position: center;
-  min-height: 500px;
-  display: flex;
-  align-items: center;
-}
-
 .hero-overlay {
   width: 100%;
   padding: 4rem 0;
@@ -342,13 +333,6 @@ p {
   color: var(--white);
   font-size: 3rem;
   margin-bottom: 1rem;
-}
-
-.hero-sub {
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: var(--red);
-  margin-bottom: 2rem;
 }
 
 /* Page Hero (inner pages) */
@@ -778,37 +762,6 @@ p {
   margin-top: 2rem;
 }
 
-/* Estimate Form */
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.35rem;
-  color: var(--navy);
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 0.65rem 0.85rem;
-  font-family: var(--font-family);
-  font-size: 1rem;
-  border: 1px solid var(--mid-gray);
-  border-radius: 3px;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--navy);
-}
-
 /* ==========================================================================
    Footer
    ========================================================================== */
@@ -971,13 +924,6 @@ p {
   .logo img {
     height: 65px;
   }
-
-  .hero {
-    min-height: 350px;
-  }
-
-  .hero-content h1 { font-size: 1.75rem; letter-spacing: 0.02em; }
-  .hero-sub { font-size: 1rem; }
 
   .hero-overlay {
     padding: 2.5rem 0;

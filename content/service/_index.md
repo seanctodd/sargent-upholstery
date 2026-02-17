@@ -1,6 +1,7 @@
 ---
 title: "Our Services"
 description: "Automotive upholstery, convertible tops, leather interiors, fleet services, and more from Sargent Upholstery Co. in Jacksonville, FL."
+heroImage: "images/heroes/home.webp"
 ---
 
 Since 1935, Sargent Upholstery Co. has provided Jacksonville with expert automotive upholstery services. From classic car restorations to modern fleet vehicles, our master craftsmen deliver quality you can see and feel.

@@ -25,6 +25,14 @@ We use the information we collect to:
 
 We do not sell, trade, or rent your personal information to third parties. We may share information only as necessary to comply with the law or protect our rights.
 
+## Third-Party Services
+
+Our website uses the following third-party services that may collect data independently:
+
+- **Google Fonts** — Web fonts are loaded from Google's servers. Google may log your IP address. See [Google's Privacy Policy](https://policies.google.com/privacy).
+- **Google Maps** — An embedded map is used on our Contact page. Google may collect usage data. See [Google's Privacy Policy](https://policies.google.com/privacy).
+- **ShopMonkey** — Our estimate request form is provided by ShopMonkey via an embedded iframe. Information you submit through that form is subject to [ShopMonkey's Privacy Policy](https://www.shopmonkey.io/privacy-policy).
+
 ## Contact Us
 
 If you have questions about this Privacy Policy, please contact us at:
@@ -32,4 +40,4 @@ If you have questions about this Privacy Policy, please contact us at:
 **Sargent Upholstery Co.**
 44 E 1st St, Jacksonville, FL 32206
 [sales@sargentupholstery.com](mailto:sales@sargentupholstery.com)
-[904.355.2529](tel:904.355.2529)
+[904.355.2529](tel:+19043552529)

@@ -72,6 +72,12 @@
   var items = document.querySelectorAll('.ig-gallery-item[data-large]');
   var current = 0;
 
+  var closeBtn = lightbox.querySelector('.ig-lightbox-close');
+  var prevBtn = lightbox.querySelector('.ig-lightbox-prev');
+  var nextBtn = lightbox.querySelector('.ig-lightbox-next');
+  var focusable = [closeBtn, prevBtn, nextBtn];
+  var triggerEl = null;
+
   function show(index) {
     if (index < 0) index = items.length - 1;
     if (index >= items.length) index = 0;
@@ -92,21 +98,26 @@
     }
     lightbox.classList.add('active');
     document.body.style.overflow = 'hidden';
+    closeBtn.focus();
   }
 
   function close() {
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+    if (triggerEl) {
+      triggerEl.focus();
+      triggerEl = null;
+    }
   }
 
   items.forEach(function (item, i) {
     item.style.cursor = 'pointer';
-    item.addEventListener('click', function () { show(i); });
+    item.addEventListener('click', function () { triggerEl = item; show(i); });
   });
 
-  lightbox.querySelector('.ig-lightbox-close').addEventListener('click', close);
-  lightbox.querySelector('.ig-lightbox-prev').addEventListener('click', function () { show(current - 1); });
-  lightbox.querySelector('.ig-lightbox-next').addEventListener('click', function () { show(current + 1); });
+  closeBtn.addEventListener('click', close);
+  prevBtn.addEventListener('click', function () { show(current - 1); });
+  nextBtn.addEventListener('click', function () { show(current + 1); });
 
   lightbox.addEventListener('click', function (e) {
     if (e.target === lightbox) close();
@@ -117,6 +128,16 @@
     if (e.key === 'Escape') close();
     if (e.key === 'ArrowLeft') show(current - 1);
     if (e.key === 'ArrowRight') show(current + 1);
+    if (e.key === 'Tab') {
+      var idx = focusable.indexOf(document.activeElement);
+      if (e.shiftKey) {
+        e.preventDefault();
+        focusable[(idx - 1 + focusable.length) % focusable.length].focus();
+      } else {
+        e.preventDefault();
+        focusable[(idx + 1) % focusable.length].focus();
+      }
+    }
   });
 })();
 </script>
