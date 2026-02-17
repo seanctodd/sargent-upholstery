@@ -24,7 +24,10 @@ Jacksonville, FL 32206
 
 ## Hours & Appointments
 
-Sargent Upholstery operates by appointment only. Please call or email us to schedule your visit.
+**Monday – Friday:** 8:00 AM – 4:30 PM
+**Saturday – Sunday:** Closed
+
+No appointment needed for estimates — feel free to stop by anytime during business hours and we'll be happy to take a look at your project.
 
 ## Complimentary Shuttle
 
