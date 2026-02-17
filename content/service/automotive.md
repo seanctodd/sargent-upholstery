@@ -6,7 +6,15 @@ heroImage: "images/heroes/automotive.webp"
 
 ## Convertible Tops
 
-We feature convertible tops in a wide variety of materials to suit your budget as well as more exotic solution dyed acrylic cloth tops for sports cars and imports. Our specialty is in troubleshooting hydraulic, electrical and mechanical problems as well as offer one day service on most convertibles.
+Whether you're replacing a worn-out top or upgrading to a premium material, we install convertible tops for all makes and models — from classic Mustangs to late-model Miatas. We offer vinyl, canvas, and solution-dyed acrylic cloth options to fit every budget and style.
+
+Beyond installation, we troubleshoot and repair hydraulic, electrical, and mechanical convertible top systems. Most top replacements are completed in a single day.
+
+We source our tops from the industry's best manufacturers:
+
+- [**GAHH Automotive**](https://www.gahh.com) — the largest convertible top manufacturer in the U.S., offering OEM-quality tops for a wide range of vehicles
+- [**Robbins Auto Tops**](https://www.robbinsautotop.com) — premium aftermarket tops known for precise fit and factory-grade materials
+- [**EZ-ON Auto Tops**](https://www.ezonautotops.com) — American-made tops with easy installation and excellent durability
 
 ## Headliners
 
