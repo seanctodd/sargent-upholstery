@@ -31,6 +31,10 @@ Our seat covers are made of the finest quality materials and produced by master 
 
 Upgrading your interior to leather will increase the value of your car and improve the overall comfort and driving experience. The smell of leather is equal to none. We install only the finest leather kits that are custom made for your vehicle. They can be fully customizable with options such as different color seat inserts, thread color, perforated leather, and much more!
 
+## Door Panels
+
+Cracked, faded, or damaged door panels can drag down an otherwise clean interior. We repair and recover door panels using factory-matched materials or custom fabrics and vinyl to give your doors a fresh, finished look. Whether it's a single panel with a broken armrest or a full set that needs recovering, we handle both stock restorations and custom builds for classics, daily drivers, and show cars.
+
 ## Automotive Carpet
 
 Carpets are generally custom ordered to fit your particular car. We offer a choice of poly or mass backed carpets. These carpets are 100% Nylon and come with new padding and a vinyl heal pad. The difference between the poly and mass backed carpets is in the type and thickness of the backing. The thicker mass backed carpet increases the heat and sound insulation properties of the car. The average installation time for carpets is four to six hours and requires a small deposit. We also offer fitted vinyl floor mats for commercial trucks and vans.
