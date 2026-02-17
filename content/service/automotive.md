@@ -12,6 +12,9 @@ We feature convertible tops in a wide variety of materials to suit your budget a
 
 By far, one of the major problems common to virtually all late-model cars is the sagging headliner. Because the original headliner material is foam backed, over a period of time the foam backing starts to disintegrate and leaves a dust residue causing the fabric to drop loose from the headliner board. Correcting the sagging headliner involves a multi step process that will restore it to like "new" condition. In fact, we guarantee our headliners for five years.
 
+## OEM Seat Cover Replacement & OEM-Match Parts
+We specialize in OEM seat cover replacement and high-quality aftermarket OEM-match seat covers that restore your interior to factory condition. We’ll help you find the best match for your vehicle at a price point that fits your budget. This option typically requires the least amount of downtime, getting you back on the road quickly.
+
 ## Custom Seat Covers
 
 Our seat covers are made of the finest quality materials and produced by master craftsmen according to our customer's specifications. We specialize in the unusual and hard to fit. Everything from tractor seats to after market racing seats. Please call for pricing information.
@@ -23,7 +26,3 @@ Upgrading your interior to leather will increase the value of your car and impro
 ## Automotive Carpet
 
 Carpets are generally custom ordered to fit your particular car. We offer a choice of poly or mass backed carpets. These carpets are 100% Nylon and come with new padding and a vinyl heal pad. The difference between the poly and mass backed carpets is in the type and thickness of the backing. The thicker mass backed carpet increases the heat and sound insulation properties of the car. The average installation time for carpets is four to six hours and requires a small deposit. We also offer fitted vinyl floor mats for commercial trucks and vans.
-
-## DashTopper™
-
-Many cars are plagued with a cracked, warped or faded dash. One solution to this problem is to cover it with a DashTopper™. These are special order covers available in a wide variety of finishes and colors. It can be used to protect a new dash or hide damaged dashboards. In the event where the dash has been destroyed this product combined with structural repair work can have your dash looking as good as new. Most can be installed in under one hour.

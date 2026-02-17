@@ -4,8 +4,10 @@ description: "Commercial fleet upholstery services from Sargent Upholstery Co. i
 heroImage: "images/heroes/fleet-services.webp"
 ---
 
-Work trucks, vans, and cars can wear out quickly, but we can take care of all your fleet upholstery needs!
+## Keep Your Fleet Looking Professional
 
-It's hard to beat our competitive pricing, central location, convenient scheduling, and quick turnaround. With a vast selection of materials and a large garage to store vehicles, Sargent Upholstery can work on all makes and models. We'll get your fleet in, out, and on their way in no time!
+Work trucks, vans, and cars take a beating — torn seats, worn armrests, and faded interiors don't just look bad, they hurt your brand. We'll get your vehicles looking sharp again.
 
-Please call or stop by for more information!
+Competitive pricing, a central downtown location, flexible scheduling, and fast turnaround — we make it easy to keep your whole fleet in top shape. With a wide selection of heavy-duty materials and a large garage that accommodates vehicles of all sizes, we handle everything from a single van to an entire fleet of service trucks.
+
+Give us a call or stop by for a free estimate.

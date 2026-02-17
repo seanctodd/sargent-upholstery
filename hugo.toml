@@ -47,8 +47,8 @@ disableHugoGeneratorInject = true
     description = "Full interior upholstery — seats, door panels, dashboards, and more."
 
   [[params.services]]
-    title = "Custom Canvas"
-    description = "Durable custom canvas work for boats, trucks, and specialty vehicles."
+    title = "OEM Cover Replacement"
+    description = "Factory-spec replacement covers for seats, consoles, and armrests."
 
   [[params.services]]
     title = "Leather Interiors"
