@@ -1,7 +1,7 @@
 ---
 title: "Contact"
 description: "Get in touch with Sargent Upholstery Co. in Jacksonville, FL."
-heroImage: "images/heroes/contact.jpg"
+heroImage: "images/heroes/contact.webp"
 ---
 
 <div class="contact-grid">

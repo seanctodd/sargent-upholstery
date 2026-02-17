@@ -1,5 +1,9 @@
 {{ define "main" }}
-<section class="page-hero"{{ with .Params.heroImage }} style="background-image: url('{{ . | relURL }}')"{{ end }}>
+<section class="page-hero">
+  {{- with .Params.heroImage }}
+  {{- $base := replace . ".webp" "" }}
+  <img class="hero-img" src="{{ . | relURL }}" srcset="{{ (printf "%s-640w.webp" $base) | relURL }} 640w, {{ (printf "%s-1024w.webp" $base) | relURL }} 1024w, {{ . | relURL }} 1920w" sizes="100vw" alt="" width="1920" height="1281" fetchpriority="high">
+  {{- end }}
   <div class="hero-overlay">
     <div class="container hero-content">
       <h1>{{ .Site.Params.heroHeading | default "Quality & Service Since 1935" }}</h1>
@@ -24,7 +28,13 @@
       <a href="{{ "service/" | relURL }}" class="btn btn-navy">View All Services</a>
     </div>
     <div class="video-embed">
-      <iframe src="https://www.youtube.com/embed/1Qc63s6237c" title="Sargent Upholstery Co." loading="lazy" allowfullscreen></iframe>
+      <div class="lite-youtube" data-videoid="1Qc63s6237c" role="button" tabindex="0" aria-label="Play: Sargent Upholstery Co.">
+        <picture>
+          <source type="image/webp" srcset="https://i.ytimg.com/vi_webp/1Qc63s6237c/hqdefault.webp">
+          <img src="https://i.ytimg.com/vi/1Qc63s6237c/hqdefault.jpg" alt="Sargent Upholstery Co." loading="lazy" width="480" height="360">
+        </picture>
+        <div class="lite-youtube-playbtn" aria-hidden="true"></div>
+      </div>
     </div>
   </div>
 </section>

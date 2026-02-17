@@ -35,10 +35,10 @@
               {{- if (strings.HasSuffix .MediaType.SubType "webp") }}
                 {{- $img = .Filter (images.Process "jpeg") -}}
               {{- end }}
-              {{- $thumb := $img.Resize "640x640 jpg q85" -}}
-              {{- $large := $img.Resize "1200x jpg q90" -}}
+              {{- $thumb := $img.Resize "640x640 webp q85" -}}
+              {{- $large := $img.Resize "1200x webp q90" -}}
   <div class="ig-gallery-item" data-index="{{ $i }}" data-large="{{ $large.RelPermalink }}" data-caption="{{ $caption | htmlEscape }}" data-link="{{ $permalink }}">
-    <img src="{{ $thumb.RelPermalink }}" alt="{{ with $caption }}{{ . }}{{ else }}Instagram post by @{{ $username }}{{ end }}" loading="lazy">
+    <img src="{{ $thumb.RelPermalink }}" alt="{{ with $caption }}{{ . }}{{ else }}Instagram post by @{{ $username }}{{ end }}" loading="lazy" width="640" height="640">
   </div>
             {{- end }}
           {{- end }}

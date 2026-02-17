@@ -2,6 +2,15 @@ baseURL = 'https://seanctodd.github.io/sargent-upholstery/'
 languageCode = 'en-us'
 title = 'Sargent Upholstery Co.'
 theme = 'sargent'
+disableHugoGeneratorInject = true
+
+[minify]
+  minifyOutput = true
+  [minify.tdewolff]
+    [minify.tdewolff.html]
+      keepWhitespace = false
+    [minify.tdewolff.css]
+      keepCSS2 = true
 
 [outputs]
   home = ["HTML", "RSS"]

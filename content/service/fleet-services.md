@@ -1,7 +1,7 @@
 ---
 title: "Fleet Services"
 description: "Commercial fleet upholstery services from Sargent Upholstery Co. in Jacksonville, FL."
-heroImage: "images/heroes/fleet-services.jpg"
+heroImage: "images/heroes/fleet-services.webp"
 ---
 
 Work trucks, vans, and cars can wear out quickly, but we can take care of all your fleet upholstery needs!

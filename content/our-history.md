@@ -1,7 +1,7 @@
 ---
 title: "Our History"
 description: "The story of Sargent Upholstery Co., a family-owned Jacksonville business since 1935."
-heroImage: "images/heroes/our-history.jpg"
+heroImage: "images/heroes/our-history.webp"
 ---
 
 ## Quality & Service Since 1935

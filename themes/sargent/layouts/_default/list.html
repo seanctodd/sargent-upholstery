@@ -1,5 +1,9 @@
 {{ define "main" }}
-<section class="page-hero"{{ with .Params.heroImage }} style="background-image: url('{{ . | relURL }}')"{{ end }}>
+<section class="page-hero">
+  {{- with .Params.heroImage }}
+  {{- $base := replace . ".webp" "" }}
+  <img class="hero-img" src="{{ . | relURL }}" srcset="{{ (printf "%s-640w.webp" $base) | relURL }} 640w, {{ (printf "%s-1024w.webp" $base) | relURL }} 1024w, {{ . | relURL }} 1920w" sizes="100vw" alt="" width="1920" height="1280" fetchpriority="high">
+  {{- end }}
   <div class="hero-overlay">
     <div class="container">
       <h1>{{ .Title }}</h1>

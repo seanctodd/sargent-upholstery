@@ -1,13 +1,13 @@
 {{- $reviews := site.Data.reviews -}}
 {{- if $reviews -}}
-{{- $shuffled := shuffle $reviews -}}
-{{- $selected := first 4 $shuffled -}}
+{{- $fivestar := where $reviews "rating" 5 -}}
+{{- if $fivestar -}}
 <section class="reviews-section">
   <div class="container">
     <h2 class="section-heading">What Our Customers Say</h2>
-    <div class="reviews-grid">
-      {{- range $selected }}
-      <div class="review-card">
+    <div class="reviews-grid" id="reviews-grid">
+      {{- range $fivestar }}
+      <div class="review-card" style="display:none">
         <div class="review-stars">
           {{- range seq 5 }}&#9733;{{ end -}}
         </div>
@@ -25,8 +25,21 @@
       {{- end }}
     </div>
     <div class="text-center reviews-cta">
-      <a href="https://www.google.com/maps/place/Sargent+Upholstery+Co./@30.3321,-81.6528,17z/" class="btn btn-navy" target="_blank" rel="noopener">See All Reviews on Google</a>
+      <a href="https://www.google.com/maps/search/Sargent+Upholstery+Co+44+E+1st+St+Jacksonville+FL+32206" class="btn btn-navy" target="_blank" rel="noopener">See All Reviews on Google</a>
     </div>
   </div>
 </section>
+<script>
+(function () {
+  var cards = Array.prototype.slice.call(document.querySelectorAll('#reviews-grid .review-card'));
+  for (var i = cards.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = cards[i]; cards[i] = cards[j]; cards[j] = tmp;
+  }
+  cards.slice(0, 4).forEach(function (card) {
+    card.style.display = '';
+  });
+})();
+</script>
+{{- end -}}
 {{- end -}}

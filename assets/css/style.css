@@ -117,7 +117,7 @@ p {
   padding: 0.85rem 2rem;
   font-family: var(--font-family);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 1.17rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: none;
@@ -353,12 +353,24 @@ p {
 
 /* Page Hero (inner pages) */
 .page-hero {
+  position: relative;
   background: var(--navy);
-  background-size: cover;
-  background-position: center;
+  min-height: 120px;
+  overflow: hidden;
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
 }
 
 .page-hero .hero-overlay {
+  position: relative;
+  z-index: 1;
   padding: 3rem 0;
   background: rgba(27, 45, 88, 0.7);
 }
@@ -421,6 +433,49 @@ p {
   width: 100%;
   height: 100%;
   border: none;
+}
+
+.lite-youtube {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  background: #000;
+}
+
+.lite-youtube img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lite-youtube-playbtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 14px;
+  transition: background 0.2s;
+}
+
+.lite-youtube:hover .lite-youtube-playbtn {
+  background: #EC1C24;
+}
+
+.lite-youtube-playbtn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 53%;
+  transform: translate(-50%, -50%);
+  border-style: solid;
+  border-width: 11px 0 11px 19px;
+  border-color: transparent transparent transparent #fff;
 }
 
 /* ==========================================================================
@@ -692,7 +747,7 @@ p {
 
 .review-source {
   font-size: 0.8rem;
-  color: #999;
+  color: #767676;
 }
 
 .reviews-cta {
@@ -1010,7 +1065,6 @@ p {
 
   .btn {
     padding: 0.75rem 1.5rem;
-    font-size: 0.85rem;
   }
 }
 

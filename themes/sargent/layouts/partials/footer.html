@@ -10,7 +10,7 @@
     </div>
     <div class="footer-col footer-col-logo">
       {{- with .Site.Params.logo }}
-      <img src="{{ . | relURL }}" alt="{{ $.Site.Title }}" class="footer-logo">
+      <img src="{{ . | relURL }}" alt="{{ $.Site.Title }}" class="footer-logo" width="223" height="150">
       {{- else }}
       <p class="footer-heading">{{ $.Site.Title }}</p>
       <p>{{ $.Site.Params.tagline }}</p>
@@ -36,4 +36,4 @@
     <p>&copy; {{ now.Year }} {{ .Site.Title }} All rights reserved. | <a href="{{ "privacy-policy/" | relURL }}">Privacy Policy</a></p>
   </div>
 </footer>
-<script src="{{ "js/main.js" | relURL }}"></script>
+<script src="{{ "js/main.js" | relURL }}" defer></script>
