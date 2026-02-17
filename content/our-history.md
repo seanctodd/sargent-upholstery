@@ -11,6 +11,7 @@ Locally owned for over 90 years in Jacksonville, Florida, Sargent Upholstery was
 <div class="history-photos">
   {{< img src="images/old/2021_03_09_12_23_10.jpg" alt="The original Sargent Seat Covers storefront on Main Street" loading="lazy" width="2114" height="2103" >}}
   {{< img src="images/old/2021_03_09_12_22_28.jpg" alt="Young Mike Todd with the Sargent Seat Cover Co. delivery car" loading="lazy" width="2102" height="2064" >}}
+  <br>
 </div>
 
 At the time of purchase, the company was located on Main Street in Springfield and there were three full time employees. Under the leadership of the Todds, Sargent Seat Cover Company was rebranded as Sargent Upholstery Co. and quickly outgrew the space on Main Street. The Todds purchased their current property downtown at 44 East 1st Street in 1962. Originally a grocery store, the property was remodeled and an east wing was added. Several other adjoining properties were purchased since, and additional buildings were constructed as the business continued to grow.
@@ -18,6 +19,7 @@ At the time of purchase, the company was located on Main Street in Springfield a
 <div class="history-photos">
   {{< img src="images/old/2021_03_09_12_21_24.jpg" alt="Sargent Seat Covers shop at 44 East 1st Street" loading="lazy" width="2127" height="2057" >}}
   {{< img src="images/old/2021_03_09_12_22_44.jpg" alt="The expanded Sargent Upholstery Co. location" loading="lazy" width="2127" height="2052" >}}
+  <br>
 </div>
 
 Margaret and Marion's son, Mike Todd, grew up in the family business and took over for his parents when they retired. He is a graduate of the University of Central Florida and served in the Army Reserves. Mike is now the president of Sargent Upholstery. Sean Todd, the third generation to work in the family business, is now the vice president of Sargent Upholstery.
@@ -25,6 +27,7 @@ Margaret and Marion's son, Mike Todd, grew up in the family business and took ov
 <div class="history-photos">
   {{< img src="images/old/2021_03_09_12_19_29.jpg" alt="Browsing seat cover samples in the showroom" loading="lazy" width="3949" height="5141" >}}
   {{< img src="images/old/2021_03_09_12_25_22.jpg" alt="Classic cars outside Sargent Upholstery" loading="lazy" width="6051" height="4779" >}}
+<br>
 </div>
 
 Sargent Upholstery started out providing car upholstery, installing plastic covers for bucket and bench seats in cars. Today, they've expanded to installing any kind of custom car upholstery and repair, convertible tops, car headliners, and contract upholstery for hospitality and medical facilities. The Todd family takes great pride in their work and serving the Jacksonville community.
