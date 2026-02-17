@@ -55,7 +55,7 @@ jobs:
       - name: Fetch Google Reviews
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-        run: bash scripts/fetch-reviews.sh
+        run: go run scripts/fetch-reviews.go
       - name: Commit new reviews
         run: |
           git config user.name "github-actions[bot]"
