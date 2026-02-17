@@ -20,7 +20,7 @@ Sargent Upholstery started out providing car upholstery, installing plastic cove
   <img src="/sargent-upholstery/images/old/2021_03_09_12_22_28.jpg" alt="Young Mike Todd with the Sargent Seat Cover Co. delivery car" loading="lazy" width="2102" height="2064">
   <img src="/sargent-upholstery/images/old/2021_03_09_12_22_44.jpg" alt="The expanded Sargent Upholstery Co. location" loading="lazy" width="2127" height="2052">
   <img src="/sargent-upholstery/images/old/2021_03_09_12_19_29.jpg" alt="Browsing seat cover samples in the showroom" loading="lazy" width="3949" height="5141">
-  <img src="/sargent-upholstery/images/old/2021_03_09_12_25_43.jpg" alt="Craftsman at work in the upholstery shop" loading="lazy" width="4779" height="6064">
+  <img src="/sargent-upholstery/images/old/2021_03_09_12_25_43.jpg" alt="Craftsman at work in the upholstery shop" loading="lazy" width="6064" height="4779">
   <img src="/sargent-upholstery/images/old/2021_03_09_12_24_08.jpg" alt="Workers cutting materials in the shop" loading="lazy" width="2127" height="2059">
-  <img src="/sargent-upholstery/images/old/2021_03_09_12_25_22.jpg" alt="Classic cars outside Sargent Upholstery" loading="lazy" width="4779" height="6051">
+  <img src="/sargent-upholstery/images/old/2021_03_09_12_25_22.jpg" alt="Classic cars outside Sargent Upholstery" loading="lazy" width="6051" height="4779">
 </div>
