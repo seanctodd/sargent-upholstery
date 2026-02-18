@@ -24,9 +24,10 @@
 <link rel="icon" href="{{ "images/logo.svg" | relURL }}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{ "favicon.ico" | relURL }}">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&display=swap"></noscript>
+{{- with .Params.heroImage -}}
+{{- $base := replace . ".webp" "" -}}
+<link rel="preload" as="image" imagesrcset="{{ (printf "%s-640w.webp" $base) | relURL }} 640w, {{ (printf "%s-1024w.webp" $base) | relURL }} 1024w, {{ . | relURL }} 1920w" imagesizes="100vw">
+{{- end }}
+<link rel="preload" href="/fonts/work-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">

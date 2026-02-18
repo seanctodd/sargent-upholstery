@@ -1,6 +1,17 @@
 {{- $src := .Get "src" -}}
 {{- $alt := .Get "alt" | default "" -}}
 {{- $loading := .Get "loading" | default "lazy" -}}
-{{- $width := .Get "width" -}}
-{{- $height := .Get "height" -}}
-<img src="{{ $src | relURL }}" alt="{{ $alt }}"{{ with $loading }} loading="{{ . }}"{{ end }}{{ with $width }} width="{{ . }}"{{ end }}{{ with $height }} height="{{ . }}"{{ end }}>
+{{- $img := resources.Get $src -}}
+{{- if $img -}}
+  {{- $sm := $img.Resize "640x webp q80" -}}
+  {{- $md := $img.Resize "1024x webp q80" -}}
+  {{- $lg := $img.Resize "1400x webp q85" -}}
+<img src="{{ $sm.RelPermalink }}"
+  srcset="{{ $sm.RelPermalink }} 640w, {{ $md.RelPermalink }} 1024w, {{ $lg.RelPermalink }} 1400w"
+  sizes="(max-width: 768px) 100vw, 50vw"
+  alt="{{ $alt }}"
+  loading="{{ $loading }}"
+  width="{{ $sm.Width }}" height="{{ $sm.Height }}">
+{{- else -}}
+<img src="{{ $src | relURL }}" alt="{{ $alt }}" loading="{{ $loading }}">
+{{- end -}}
