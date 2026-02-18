@@ -6,7 +6,7 @@
 {{- $selected := first 4 $shuffled -}}
 <section class="reviews-section">
   <div class="container">
-    <h2 class="section-heading">What Our Customers Say</h2>
+    <h2 class="section-heading">{{ i18n "reviews_heading" }}</h2>
     <div class="reviews-grid">
       {{- range $selected }}
       <div class="review-card">
@@ -24,12 +24,12 @@
           </p>
         </blockquote>
         <cite class="review-author">{{ .author }}</cite>
-        <span class="review-source">Google Review</span>
+        <span class="review-source">{{ i18n "reviews_source" }}</span>
       </div>
       {{- end }}
     </div>
     <div class="text-center reviews-cta">
-      <a href="https://www.google.com/maps/search/Sargent+Upholstery+Co+44+E+1st+St+Jacksonville+FL+32206" class="btn btn-navy" target="_blank" rel="noopener">See All Reviews on Google</a>
+      <a href="https://www.google.com/maps/search/Sargent+Upholstery+Co+44+E+1st+St+Jacksonville+FL+32206" class="btn btn-navy" target="_blank" rel="noopener">{{ i18n "reviews_cta" }}</a>
     </div>
   </div>
 </section>

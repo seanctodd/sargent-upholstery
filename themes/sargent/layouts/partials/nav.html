@@ -4,15 +4,15 @@
       <img src="{{ "images/non-oval-logo-white.svg" | relURL }}" alt="{{ .Site.Title }}" width="261" height="110">
     </a>
     <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">
-    <label for="nav-toggle" class="nav-toggle" role="button" aria-label="Toggle navigation" aria-expanded="false">
+    <label for="nav-toggle" class="nav-toggle" role="button" aria-label="{{ i18n "nav_toggle" }}" aria-expanded="false">
       <span class="hamburger"></span>
     </label>
-    <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+    <nav class="site-nav" id="site-nav" aria-label="{{ i18n "nav_main" }}">
       <ul>
         {{- range .Site.Menus.main }}
         <li{{ if .HasChildren }} class="has-dropdown"{{ end }}>
           {{- if .HasChildren }}
-          <input type="checkbox" id="dropdown-{{ .Name | urlize }}" class="dropdown-checkbox" aria-label="Toggle {{ .Name }} submenu">
+          <input type="checkbox" id="dropdown-{{ .Name | urlize }}" class="dropdown-checkbox" aria-label="{{ i18n "nav_submenu_toggle" (dict "Name" .Name) }}">
           <label for="dropdown-{{ .Name | urlize }}" class="dropdown-label">{{ .Name }}</label>
           <ul class="dropdown" role="menu">
             {{- range .Children }}
@@ -24,6 +24,29 @@
           {{- end }}
         </li>
         {{- end }}
+        <li class="lang-switch">
+          {{- if eq .Site.Language.Lang "en" -}}
+            {{- with .Translations -}}
+              {{- range . -}}
+                {{- if eq .Language.Lang "es" -}}
+                  <a href="{{ .Permalink }}" aria-label="Español">ES</a>
+                {{- end -}}
+              {{- end -}}
+            {{- else -}}
+              <a href="{{ "es/" | absURL }}" aria-label="Español">ES</a>
+            {{- end -}}
+          {{- else -}}
+            {{- with .Translations -}}
+              {{- range . -}}
+                {{- if eq .Language.Lang "en" -}}
+                  <a href="{{ .Permalink }}" aria-label="English">EN</a>
+                {{- end -}}
+              {{- end -}}
+            {{- else -}}
+              <a href="{{ "" | absURL }}" aria-label="English">EN</a>
+            {{- end -}}
+          {{- end -}}
+        </li>
       </ul>
     </nav>
   </div>

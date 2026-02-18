@@ -1,0 +1,53 @@
+## Navigation
+nav_toggle: "Toggle navigation"
+nav_main: "Main navigation"
+nav_submenu_toggle: "Toggle {{ .Name }} submenu"
+
+## Footer
+footer_contact: "Contact"
+footer_follow: "Follow Us"
+footer_rights: "All rights reserved."
+footer_privacy: "Privacy Policy"
+footer_facebook: "Facebook"
+footer_instagram: "Instagram"
+
+## Skip link
+skip_to_content: "Skip to main content"
+
+## Homepage
+hero_cta: "Get a Free Estimate"
+services_heading: "Our Services"
+view_all_services: "View All Services"
+why_choose_heading: "Why Choose Us"
+amenity_family_title: "Family Owned Since 1935"
+amenity_family_desc: "Three generations of the Todd family delivering expert craftsmanship."
+amenity_estimates_title: "Free Estimates"
+amenity_estimates_desc: "Bring your vehicle in for a no-obligation consultation and quote."
+amenity_materials_title: "Quality Materials"
+amenity_materials_desc: "We use only premium fabrics, leathers, and foams for lasting results."
+amenity_shuttle_title: "Complimentary Shuttle"
+amenity_shuttle_desc: "Free shuttle service available in downtown Jacksonville."
+cta_heading: "Ready to Get Started?"
+cta_body: "Contact us today for a free estimate on your next upholstery project."
+cta_contact: "Contact Us"
+play_video: "Play: Sargent Upholstery Co."
+
+## Reviews
+reviews_heading: "What Our Customers Say"
+reviews_source: "Google Review"
+reviews_cta: "See All Reviews on Google"
+
+## 404
+not_found_heading: "Page Not Found"
+not_found_body: "Sorry, the page you're looking for doesn't exist or has been moved."
+not_found_btn: "Back to Home"
+
+## Instagram gallery
+ig_error: "Could not load Instagram posts. Follow us on"
+ig_see_work: "to see our latest work."
+ig_alt_fallback: "Instagram post by"
+ig_view: "View on Instagram"
+ig_post_alt: "Instagram post"
+ig_close: "Close"
+ig_prev: "Previous"
+ig_next: "Next"

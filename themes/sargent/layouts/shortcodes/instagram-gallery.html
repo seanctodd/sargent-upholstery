@@ -4,11 +4,10 @@
 {{- $headers := dict "x-ig-app-id" "936619743392459" "User-Agent" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" -}}
 {{- $opts := dict "method" "GET" "headers" $headers -}}
 {{- $data := dict -}}
-{{- $result := try (resources.GetRemote $apiURL $opts) -}}
-{{- with $result.Err -}}
-  {{- warnf "Instagram fetch error: %s" . -}}
-{{- else -}}
-  {{- with $result.Value -}}
+{{- with resources.GetRemote $apiURL $opts -}}
+  {{- with .Err -}}
+    {{- warnf "Instagram fetch error: %s" . -}}
+  {{- else -}}
     {{- $data = .Content | transform.Unmarshal -}}
   {{- end -}}
 {{- end -}}
@@ -30,9 +29,8 @@
         {{- end }}
         {{- $permalink := printf "https://www.instagram.com/p/%s/" $node.shortcode -}}
         {{- if $src }}
-          {{- $imgResult := try (resources.GetRemote $src) -}}
-        {{- if not $imgResult.Err }}
-          {{- with $imgResult.Value }}
+          {{- with resources.GetRemote $src -}}
+          {{- if not .Err }}
               {{- $img := . -}}
               {{- if (strings.HasSuffix .MediaType.SubType "webp") }}
                 {{- $img = .Filter (images.Process "jpeg") -}}
@@ -40,7 +38,7 @@
               {{- $thumb := $img.Resize "640x640 webp q85" -}}
               {{- $large := $img.Resize "1200x webp q90" -}}
   <div class="ig-gallery-item" data-index="{{ $i }}" data-large="{{ $large.RelPermalink }}" data-caption="{{ $caption | htmlEscape }}" data-link="{{ $permalink }}">
-    <img src="{{ $thumb.RelPermalink }}" alt="{{ with $caption }}{{ . }}{{ else }}Instagram post by @{{ $username }}{{ end }}" loading="lazy" width="640" height="640">
+    <img src="{{ $thumb.RelPermalink }}" alt="{{ with $caption }}{{ . }}{{ else }}{{ i18n "ig_alt_fallback" }} @{{ $username }}{{ end }}" loading="lazy" width="640" height="640">
   </div>
           {{- end }}
         {{- end }}
@@ -49,14 +47,14 @@
     {{- end }}
   {{- end }}
 {{- else }}
-  <p class="ig-gallery-error">Could not load Instagram posts. Follow us on <a href="https://www.instagram.com/{{ $username }}/" target="_blank" rel="noopener">@{{ $username }}</a> to see our latest work.</p>
+  <p class="ig-gallery-error">{{ i18n "ig_error" }} <a href="https://www.instagram.com/{{ $username }}/" target="_blank" rel="noopener">@{{ $username }}</a> {{ i18n "ig_see_work" }}</p>
 {{- end }}
 </div>
 
 <div class="ig-lightbox" id="ig-lightbox">
-  <button class="ig-lightbox-close" aria-label="Close">&times;</button>
-  <button class="ig-lightbox-prev" aria-label="Previous">&lsaquo;</button>
-  <button class="ig-lightbox-next" aria-label="Next">&rsaquo;</button>
+  <button class="ig-lightbox-close" aria-label="{{ i18n "ig_close" }}">&times;</button>
+  <button class="ig-lightbox-prev" aria-label="{{ i18n "ig_prev" }}">&lsaquo;</button>
+  <button class="ig-lightbox-next" aria-label="{{ i18n "ig_next" }}">&rsaquo;</button>
   <div class="ig-lightbox-content">
     <img class="ig-lightbox-img" src="" alt="">
     <div class="ig-lightbox-caption">
@@ -86,7 +84,7 @@
     current = index;
     var item = items[index];
     lbImg.src = item.getAttribute('data-large');
-    lbImg.alt = item.getAttribute('data-caption') || 'Instagram post';
+    lbImg.alt = item.getAttribute('data-caption') || '{{ i18n "ig_post_alt" }}';
     var caption = item.getAttribute('data-caption');
     var link = item.getAttribute('data-link');
     if (caption) {
@@ -94,7 +92,7 @@
       lbCaption.href = link;
       lbCaptionWrap.style.display = '';
     } else {
-      lbCaption.textContent = 'View on Instagram';
+      lbCaption.textContent = '{{ i18n "ig_view" }}';
       lbCaption.href = link;
       lbCaptionWrap.style.display = '';
     }

@@ -2,15 +2,15 @@
 <section class="page-hero">
   <div class="hero-overlay">
     <div class="container">
-      <h1>Page Not Found</h1>
+      <h1>{{ i18n "not_found_heading" }}</h1>
     </div>
   </div>
 </section>
 <section class="page-content">
   <div class="container text-center">
-    <p>Sorry, the page you're looking for doesn't exist or has been moved.</p>
+    <p>{{ i18n "not_found_body" }}</p>
     <p class="not-found-cta">
-      <a href="{{ "" | relURL }}" class="btn btn-navy">Back to Home</a>
+      <a href="{{ "" | relURL }}" class="btn btn-navy">{{ i18n "not_found_btn" }}</a>
     </p>
   </div>
 </section>

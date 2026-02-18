@@ -220,6 +220,17 @@ p {
   color: var(--red);
 }
 
+.lang-switch a {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.lang-switch a:hover {
+  border-color: var(--red);
+}
+
 /* Dropdown */
 .has-dropdown {
   position: relative;

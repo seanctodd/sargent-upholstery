@@ -7,14 +7,14 @@
   <div class="hero-overlay">
     <div class="container hero-content">
       <h1>{{ .Site.Params.heroHeading | default "Quality & Service Since 1935" }}</h1>
-      <a href="{{ "estimate/" | relURL }}" class="btn btn-red">Get a Free Estimate</a>
+      <a href="{{ "estimate/" | relURL }}" class="btn btn-red">{{ i18n "hero_cta" }}</a>
     </div>
   </div>
 </section>
 
 <section class="services-section">
   <div class="container">
-    <h2 class="section-heading">Our Services</h2>
+    <h2 class="section-heading">{{ i18n "services_heading" }}</h2>
     <div class="services-grid">
       {{ range .Site.Params.services }}
       <div class="service-card">
@@ -24,10 +24,10 @@
       {{ end }}
     </div>
     <div class="text-center services-cta">
-      <a href="{{ "service/" | relURL }}" class="btn btn-navy">View All Services</a>
+      <a href="{{ "service/" | relURL }}" class="btn btn-navy">{{ i18n "view_all_services" }}</a>
     </div>
     <div class="video-embed">
-      <div class="lite-youtube" data-videoid="1Qc63s6237c" role="button" tabindex="0" aria-label="Play: Sargent Upholstery Co.">
+      <div class="lite-youtube" data-videoid="1Qc63s6237c" role="button" tabindex="0" aria-label="{{ i18n "play_video" }}">
         <picture>
           <source type="image/webp" srcset="https://i.ytimg.com/vi_webp/1Qc63s6237c/hqdefault.webp">
           <img src="https://i.ytimg.com/vi/1Qc63s6237c/hqdefault.jpg" alt="Sargent Upholstery Co." loading="lazy" width="480" height="360">
@@ -40,23 +40,23 @@
 
 <section class="amenities-section">
   <div class="container">
-    <h2 class="section-heading">Why Choose Us</h2>
+    <h2 class="section-heading">{{ i18n "why_choose_heading" }}</h2>
     <div class="amenities-grid">
       <div class="amenity">
-        <h3>Family Owned Since 1935</h3>
-        <p>Three generations of the Todd family delivering expert craftsmanship.</p>
+        <h3>{{ i18n "amenity_family_title" }}</h3>
+        <p>{{ i18n "amenity_family_desc" }}</p>
       </div>
       <div class="amenity">
-        <h3>Free Estimates</h3>
-        <p>Bring your vehicle in for a no-obligation consultation and quote.</p>
+        <h3>{{ i18n "amenity_estimates_title" }}</h3>
+        <p>{{ i18n "amenity_estimates_desc" }}</p>
       </div>
       <div class="amenity">
-        <h3>Quality Materials</h3>
-        <p>We use only premium fabrics, leathers, and foams for lasting results.</p>
+        <h3>{{ i18n "amenity_materials_title" }}</h3>
+        <p>{{ i18n "amenity_materials_desc" }}</p>
       </div>
       <div class="amenity">
-        <h3>Complimentary Shuttle</h3>
-        <p>Free shuttle service available in downtown Jacksonville.</p>
+        <h3>{{ i18n "amenity_shuttle_title" }}</h3>
+        <p>{{ i18n "amenity_shuttle_desc" }}</p>
       </div>
     </div>
   </div>
@@ -66,9 +66,9 @@
 
 <section class="cta-section">
   <div class="container text-center">
-    <h2>Ready to Get Started?</h2>
-    <p>Contact us today for a free estimate on your next upholstery project.</p>
-    <a href="{{ "contact/" | relURL }}" class="btn btn-red">Contact Us</a>
+    <h2>{{ i18n "cta_heading" }}</h2>
+    <p>{{ i18n "cta_body" }}</p>
+    <a href="{{ "contact/" | relURL }}" class="btn btn-red">{{ i18n "cta_contact" }}</a>
   </div>
 </section>
 {{ end }}

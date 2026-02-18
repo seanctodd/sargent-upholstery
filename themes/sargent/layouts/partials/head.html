@@ -5,13 +5,19 @@
 <link rel="canonical" href="{{ .Permalink }}">
 <meta name="robots" content="index, follow">
 
+{{/* Hreflang */}}
+<link rel="alternate" hreflang="{{ .Site.Language.Lang }}" href="{{ .Permalink }}">
+{{- range .Translations }}
+<link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}">
+{{- end }}
+
 {{/* Open Graph */}}
 <meta property="og:title" content="{{ if not .IsHome }}{{ .Title }} | {{ end }}{{ .Site.Title }}">
 <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
 <meta property="og:type" content="{{ if .IsHome }}website{{ else }}article{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
 <meta property="og:site_name" content="{{ .Site.Title }}">
-<meta property="og:locale" content="en_US">
+<meta property="og:locale" content="{{ replace .Site.Language.Lang "-" "_" }}">
 <meta property="og:image" content="{{ "images/heroes/home.webp" | absURL }}">
 
 {{/* Twitter Card */}}

@@ -1,0 +1,53 @@
+## Navegación
+nav_toggle: "Abrir menú"
+nav_main: "Navegación principal"
+nav_submenu_toggle: "Abrir submenú de {{ .Name }}"
+
+## Pie de página
+footer_contact: "Contacto"
+footer_follow: "Síguenos"
+footer_rights: "Todos los derechos reservados."
+footer_privacy: "Política de Privacidad"
+footer_facebook: "Facebook"
+footer_instagram: "Instagram"
+
+## Enlace de accesibilidad
+skip_to_content: "Saltar al contenido principal"
+
+## Página de inicio
+hero_cta: "Solicitar Presupuesto Gratis"
+services_heading: "Nuestros Servicios"
+view_all_services: "Ver Todos los Servicios"
+why_choose_heading: "¿Por Qué Elegirnos?"
+amenity_family_title: "Empresa Familiar Desde 1935"
+amenity_family_desc: "Tres generaciones de la familia Todd ofreciendo artesanía experta."
+amenity_estimates_title: "Presupuestos Gratis"
+amenity_estimates_desc: "Traiga su vehículo para una consulta y cotización sin compromiso."
+amenity_materials_title: "Materiales de Calidad"
+amenity_materials_desc: "Usamos solo telas, cueros y espumas premium para resultados duraderos."
+amenity_shuttle_title: "Transporte Gratuito"
+amenity_shuttle_desc: "Servicio de transporte gratuito disponible en el centro de Jacksonville."
+cta_heading: "¿Listo para Comenzar?"
+cta_body: "Contáctenos hoy para un presupuesto gratis en su próximo proyecto de tapicería."
+cta_contact: "Contáctenos"
+play_video: "Reproducir: Sargent Upholstery Co."
+
+## Reseñas
+reviews_heading: "Lo Que Dicen Nuestros Clientes"
+reviews_source: "Reseña de Google"
+reviews_cta: "Ver Todas las Reseñas en Google"
+
+## 404
+not_found_heading: "Página No Encontrada"
+not_found_body: "Lo sentimos, la página que busca no existe o ha sido movida."
+not_found_btn: "Volver al Inicio"
+
+## Galería de Instagram
+ig_error: "No se pudieron cargar las publicaciones de Instagram. Síguenos en"
+ig_see_work: "para ver nuestro trabajo más reciente."
+ig_alt_fallback: "Publicación de Instagram de"
+ig_view: "Ver en Instagram"
+ig_post_alt: "Publicación de Instagram"
+ig_close: "Cerrar"
+ig_prev: "Anterior"
+ig_next: "Siguiente"

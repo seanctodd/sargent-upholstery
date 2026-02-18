@@ -1,8 +1,9 @@
 baseURL = 'https://sargentupholstery.com/'
-languageCode = 'en-us'
 title = 'Sargent Upholstery Co.'
 theme = 'sargent'
 disableHugoGeneratorInject = true
+defaultContentLanguage = 'en'
+defaultContentLanguageInSubdir = false
 
 [minify]
   minifyOutput = true
@@ -20,88 +21,161 @@ disableHugoGeneratorInject = true
     [markup.goldmark.renderer]
       unsafe = true
 
-[params]
-  description = "Jacksonville's premier automotive upholstery shop — quality & service since 1935."
-  tagline = "Quality and Service Since 1935"
-  heroHeading = "Quality and Service Since 1935"
-  address = "44 E 1st St, Jacksonville, FL 32206"
-  phone = "904.355.2529"
-  email = "sales@sargentupholstery.com"
-  logo = "images/logo.svg"
+# ==========================================================================
+# Languages
+# ==========================================================================
 
-  facebook = "https://www.facebook.com/sargentupholstery"
-  instagram = "https://www.instagram.com/sargentupholsteryco"
-  instagramUsername = "sargentupholsteryco"
+[languages]
+  [languages.en]
+    languageCode = 'en-us'
+    languageName = 'English'
+    weight = 1
 
-  [[params.services]]
-    title = "Automotive Carpets & Headliners"
-    description = "Custom-fit carpet and headliner replacement for all makes and models."
+    [languages.en.params]
+      description = "Jacksonville's premier automotive upholstery shop — quality & service since 1935."
+      tagline = "Quality and Service Since 1935"
+      heroHeading = "Quality and Service Since 1935"
+      address = "44 E 1st St, Jacksonville, FL 32206"
+      phone = "904.355.2529"
+      email = "sales@sargentupholstery.com"
+      logo = "images/logo.svg"
+      facebook = "https://www.facebook.com/sargentupholstery"
+      instagram = "https://www.instagram.com/sargentupholsteryco"
+      instagramUsername = "sargentupholsteryco"
 
-  [[params.services]]
-    title = "Convertible Tops"
-    description = "Expert convertible top replacement and repair using premium materials."
+      [[languages.en.params.services]]
+        title = "Automotive Carpets & Headliners"
+        description = "Custom-fit carpet and headliner replacement for all makes and models."
+      [[languages.en.params.services]]
+        title = "Convertible Tops"
+        description = "Expert convertible top replacement and repair using premium materials."
+      [[languages.en.params.services]]
+        title = "Custom Upholstery"
+        description = "Full interior upholstery — seats, door panels, dashboards, and more."
+      [[languages.en.params.services]]
+        title = "OEM Cover Replacement"
+        description = "Factory-spec replacement covers for seats, consoles, and armrests."
+      [[languages.en.params.services]]
+        title = "Leather Interiors"
+        description = "Premium leather interior installation and restoration."
+      [[languages.en.params.services]]
+        title = "Commercial Truck Seating"
+        description = "Heavy-duty seating solutions for commercial and fleet vehicles."
 
-  [[params.services]]
-    title = "Custom Upholstery"
-    description = "Full interior upholstery — seats, door panels, dashboards, and more."
+    [[languages.en.menus.main]]
+      name = "Our Services"
+      url = "/service/"
+      weight = 1
+      identifier = "services"
+    [[languages.en.menus.main]]
+      name = "Automotive"
+      parent = "services"
+      url = "/service/automotive/"
+      weight = 1
+    [[languages.en.menus.main]]
+      name = "Marine"
+      parent = "services"
+      url = "/service/marine/"
+      weight = 2
+    [[languages.en.menus.main]]
+      name = "Fleet Services"
+      parent = "services"
+      url = "/service/fleet-services/"
+      weight = 3
+    [[languages.en.menus.main]]
+      name = "Get an Estimate"
+      url = "/estimate/"
+      weight = 2
+    [[languages.en.menus.main]]
+      name = "Gallery"
+      url = "/gallery/"
+      weight = 3
+    [[languages.en.menus.main]]
+      name = "Our History"
+      url = "/our-history/"
+      weight = 4
+    [[languages.en.menus.main]]
+      name = "Contact"
+      url = "/contact/"
+      weight = 5
+    [[languages.en.menus.main]]
+      name = "FAQ"
+      url = "/faq/"
+      weight = 6
 
-  [[params.services]]
-    title = "OEM Cover Replacement"
-    description = "Factory-spec replacement covers for seats, consoles, and armrests."
+  [languages.es]
+    languageCode = 'es'
+    languageName = 'Español'
+    weight = 2
 
-  [[params.services]]
-    title = "Leather Interiors"
-    description = "Premium leather interior installation and restoration."
+    [languages.es.params]
+      description = "El taller de tapicería automotriz líder de Jacksonville — calidad y servicio desde 1935."
+      tagline = "Calidad y Servicio Desde 1935"
+      heroHeading = "Calidad y Servicio Desde 1935"
+      address = "44 E 1st St, Jacksonville, FL 32206"
+      phone = "904.355.2529"
+      email = "sales@sargentupholstery.com"
+      logo = "images/logo.svg"
+      facebook = "https://www.facebook.com/sargentupholstery"
+      instagram = "https://www.instagram.com/sargentupholsteryco"
+      instagramUsername = "sargentupholsteryco"
 
-  [[params.services]]
-    title = "Commercial Truck Seating"
-    description = "Heavy-duty seating solutions for commercial and fleet vehicles."
+      [[languages.es.params.services]]
+        title = "Alfombras y Cielos de Auto"
+        description = "Reemplazo de alfombras y cielos a medida para todas las marcas y modelos."
+      [[languages.es.params.services]]
+        title = "Techos Convertibles"
+        description = "Reemplazo y reparación experta de techos convertibles con materiales premium."
+      [[languages.es.params.services]]
+        title = "Tapicería Personalizada"
+        description = "Tapicería interior completa — asientos, paneles de puertas, tableros y más."
+      [[languages.es.params.services]]
+        title = "Reemplazo de Cubiertas OEM"
+        description = "Cubiertas de reemplazo con especificaciones de fábrica para asientos, consolas y descansabrazos."
+      [[languages.es.params.services]]
+        title = "Interiores de Cuero"
+        description = "Instalación y restauración de interiores de cuero premium."
+      [[languages.es.params.services]]
+        title = "Asientos para Camiones Comerciales"
+        description = "Soluciones de asientos resistentes para vehículos comerciales y flotas."
 
-# Main navigation menu
-[[menus.main]]
-  name = "Our Services"
-  url = "/service/"
-  weight = 1
-
-[[menus.main]]
-  name = "Automotive"
-  parent = "Our Services"
-  url = "/service/automotive/"
-  weight = 1
-
-[[menus.main]]
-  name = "Marine"
-  parent = "Our Services"
-  url = "/service/marine/"
-  weight = 2
-
-[[menus.main]]
-  name = "Fleet Services"
-  parent = "Our Services"
-  url = "/service/fleet-services/"
-  weight = 3
-
-[[menus.main]]
-  name = "Get an Estimate"
-  url = "/estimate/"
-  weight = 2
-
-[[menus.main]]
-  name = "Gallery"
-  url = "/gallery/"
-  weight = 3
-
-[[menus.main]]
-  name = "Our History"
-  url = "/our-history/"
-  weight = 4
-
-[[menus.main]]
-  name = "Contact"
-  url = "/contact/"
-  weight = 5
-
-[[menus.main]]
-  name = "FAQ"
-  url = "/faq/"
-  weight = 6
+    [[languages.es.menus.main]]
+      name = "Servicios"
+      url = "/es/service/"
+      weight = 1
+      identifier = "services"
+    [[languages.es.menus.main]]
+      name = "Automotriz"
+      parent = "services"
+      url = "/es/service/automotive/"
+      weight = 1
+    [[languages.es.menus.main]]
+      name = "Marítimo"
+      parent = "services"
+      url = "/es/service/marine/"
+      weight = 2
+    [[languages.es.menus.main]]
+      name = "Servicios de Flota"
+      parent = "services"
+      url = "/es/service/fleet-services/"
+      weight = 3
+    [[languages.es.menus.main]]
+      name = "Solicitar Presupuesto"
+      url = "/es/estimate/"
+      weight = 2
+    [[languages.es.menus.main]]
+      name = "Galería"
+      url = "/es/gallery/"
+      weight = 3
+    [[languages.es.menus.main]]
+      name = "Nuestra Historia"
+      url = "/es/our-history/"
+      weight = 4
+    [[languages.es.menus.main]]
+      name = "Contacto"
+      url = "/es/contact/"
+      weight = 5
+    [[languages.es.menus.main]]
+      name = "Preguntas Frecuentes"
+      url = "/es/faq/"
+      weight = 6
