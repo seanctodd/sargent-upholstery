@@ -35,6 +35,14 @@ Upgrading your interior to leather will increase the value of your car and impro
 
 Cracked, faded, or damaged door panels can drag down an otherwise clean interior. We repair and recover door panels using factory-matched materials or custom fabrics and vinyl to give your doors a fresh, finished look. Whether it's a single panel with a broken armrest or a full set that needs recovering, we handle both stock restorations and custom builds for classics, daily drivers, and show cars.
 
+## Sunroof Repair
+
+A leaking or malfunctioning sunroof can cause water damage, electrical issues, and musty odors throughout your vehicle's interior. We diagnose and repair all types of sunroof problems to keep your cabin dry and your sunroof operating smoothly.
+
+- **Drain cleaning** — Clogged sunroof drains are the most common cause of interior leaks. We clear all four drain tubes and verify proper water flow to prevent costly water damage to headliners, electronics, and carpet.
+- **Troubleshooting** — Whether your sunroof is stuck open, won't close completely, or makes grinding noises, we diagnose and repair mechanical, electrical, and track-related issues to restore full operation.
+- **Glass replacement** — Cracked, shattered, or foggy sunroof glass is replaced with OEM-spec panels that fit and seal correctly, restoring both the look and weatherproofing of your roof.
+
 ## Automotive Carpet
 
 Carpets are generally custom ordered to fit your particular car. We offer a choice of poly or mass backed carpets. These carpets are 100% Nylon and come with new padding and a vinyl heal pad. The difference between the poly and mass backed carpets is in the type and thickness of the backing. The thicker mass backed carpet increases the heat and sound insulation properties of the car. The average installation time for carpets is four to six hours and requires a small deposit. We also offer fitted vinyl floor mats for commercial trucks and vans.
