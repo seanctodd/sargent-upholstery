@@ -4,10 +4,11 @@
 {{- $headers := dict "x-ig-app-id" "936619743392459" "User-Agent" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" -}}
 {{- $opts := dict "method" "GET" "headers" $headers -}}
 {{- $data := dict -}}
-{{- with resources.GetRemote $apiURL $opts -}}
-  {{- with .Err -}}
-    {{- warnf "Instagram fetch error: %s" . -}}
-  {{- else -}}
+{{- $result := try (resources.GetRemote $apiURL $opts) -}}
+{{- with $result.Err -}}
+  {{- warnf "Instagram fetch error: %s" . -}}
+{{- else -}}
+  {{- with $result.Value -}}
     {{- $data = .Content | transform.Unmarshal -}}
   {{- end -}}
 {{- end -}}
@@ -29,8 +30,9 @@
         {{- end }}
         {{- $permalink := printf "https://www.instagram.com/p/%s/" $node.shortcode -}}
         {{- if $src }}
-          {{- with resources.GetRemote $src -}}
-          {{- if not .Err }}
+          {{- $imgResult := try (resources.GetRemote $src) -}}
+        {{- if not $imgResult.Err }}
+          {{- with $imgResult.Value }}
               {{- $img := . -}}
               {{- if (strings.HasSuffix .MediaType.SubType "webp") }}
                 {{- $img = .Filter (images.Process "jpeg") -}}
