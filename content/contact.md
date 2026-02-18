@@ -39,5 +39,5 @@ We offer a complimentary shuttle service in the downtown Jacksonville area so yo
 ## Find Us
 
 <div class="map-embed">
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d862.0!2d-81.65694!3d30.33128!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88e5f72409a609bd%3A0x7908c63a7afd71fb!2sSargent%20Upholstery%20Co.!5e0!3m2!1sen!2sus!4v1700000000000" title="Sargent Upholstery Co. location - 44 E 1st St, Jacksonville, FL 32206" width="100%" height="450" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+<iframe src="https://www.google.com/maps?q=Sargent+Upholstery+Co.,+44+E+1st+St,+Jacksonville,+FL+32206&z=17&output=embed" title="Sargent Upholstery Co. location - 44 E 1st St, Jacksonville, FL 32206" width="100%" height="450" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
 </div>
