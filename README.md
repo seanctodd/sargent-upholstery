@@ -15,15 +15,15 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 - **Instagram integration shortcode** that fetches and displays recent Instagram posts with a client-side lightbox gallery
 - **Google Reviews integration** that fetches and displays customer reviews from Google Maps
 - **Custom Hugo theme** (`sargent`) with optimized layouts and partials
-- **Performance-optimized** — scores 99/100/100/100 on Lighthouse (Performance/Accessibility/Best Practices/SEO)
+- **Performance-optimized** — scores 97/100 mobile, 100/100 desktop on Lighthouse
 
 **Tech Stack:**
 - Hugo (static site generator)
 - HTML5 / CSS3 / Vanilla JavaScript
-- Hugo asset pipeline (CSS minification + fingerprinting)
+- Hugo asset pipeline (CSS minification + fingerprinting, image processing with WebP + srcset)
 - Instagram Web API integration (build-time image processing)
 - Google Places API (build-time review fetching)
-- GitHub Actions CI/CD with GitHub Pages hosting
+- Cloudflare Pages hosting with GitHub Actions for scheduled review fetching
 - Zero database requirements
 
 ---
@@ -31,7 +31,7 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 ## Quick Start
 
 ### Prerequisites
-- **Hugo Extended** (0.123.7 or later) — required for image processing
+- **Hugo Extended** (0.141.0 or later) — required for image processing and `try` keyword
   - Download: https://gohugo.io/getting-started/installing/
 
 ### Build Locally
@@ -60,19 +60,23 @@ hugo --minify
 
 ## Deployment
 
-The site is deployed automatically via **GitHub Actions** to **GitHub Pages** on every push to `main`.
+The site is hosted on **Cloudflare Pages**, which builds and deploys automatically on every push to `main`.
 
-The workflow (`.github/workflows/hugo.yml`):
-1. Installs Hugo Extended 0.123.7
-2. Fetches Google Reviews via `scripts/fetch-reviews.sh` (requires `GOOGLE_API_KEY` secret)
-3. Builds with `hugo --minify`
-4. Deploys to GitHub Pages
+**Cloudflare Pages build settings:**
+- **Build command:** `hugo --minify`
+- **Build output directory:** `public`
+- **Environment variable:** `HUGO_VERSION` = `0.147.8`
 
-**Live site:** https://seanctodd.github.io/sargent-upholstery/
+A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetch fresh Google Reviews:
+1. Fetches reviews via `scripts/fetch-reviews.go` (requires `GOOGLE_API_KEY` secret)
+2. Commits updated `data/reviews.json` back to the repo
+3. The commit triggers a Cloudflare Pages rebuild automatically
+
+**Live site:** https://sargentupholstery.com/
 
 ### Google Reviews Setup
 
-The build fetches reviews from the Google Places API. To configure:
+The workflow fetches reviews from the Google Places API. To configure:
 1. Create a Google API key with Places API access
 2. Add it as a repository secret named `GOOGLE_API_KEY`
 3. Reviews are saved to `data/reviews.json` and displayed on the homepage
@@ -84,7 +88,8 @@ The build fetches reviews from the Google Places API. To configure:
 ```
 sargent-upholstery/
 ├── assets/
-│   └── css/style.css           # Main stylesheet (processed via Hugo pipes)
+│   ├── css/style.css           # Main stylesheet (processed via Hugo pipes)
+│   └── images/old/             # History page photos (Hugo-processed to WebP)
 ├── content/                    # Markdown pages
 │   ├── _index.md               # Homepage
 │   ├── gallery.md              # Gallery with Instagram integration
@@ -101,9 +106,12 @@ sargent-upholstery/
 ├── data/
 │   └── reviews.json            # Google Reviews (fetched at build time)
 ├── scripts/
-│   └── fetch-reviews.sh        # Google Reviews fetch script
+│   └── fetch-reviews.go        # Google Reviews fetch script
 ├── static/
 │   ├── favicon.ico
+│   ├── fonts/                  # Self-hosted Work Sans woff2
+│   ├── _headers                # Cloudflare Pages security + caching headers
+│   ├── _redirects              # www → apex domain redirect
 │   └── images/
 │       ├── heroes/             # Hero images (WebP with 640w/1024w/1920w variants)
 │       ├── logo.svg
@@ -115,6 +123,7 @@ sargent-upholstery/
 │   │   ├── _default/           # Default templates (single, list, baseof)
 │   │   ├── partials/           # Reusable components (nav, footer, head, schema, reviews)
 │   │   └── shortcodes/         # Custom shortcodes
+│   │       ├── img.html               # Responsive image shortcode (WebP + srcset)
 │   │       ├── instagram-gallery.html
 │   │       └── google-reviews.html
 │   └── static/
@@ -129,23 +138,27 @@ sargent-upholstery/
 
 ## Performance
 
-The site is optimized for Core Web Vitals and scores **99/100/100/100** on Google Lighthouse (mobile):
+The site is optimized for Core Web Vitals:
 
-| Metric | Score |
-|---|---|
-| Performance | 99 |
-| Accessibility | 100 |
-| Best Practices | 100 |
-| SEO | 100 |
+| Metric | Mobile | Desktop |
+|---|---|---|
+| Performance | 97 | 100 |
+| FCP | 0.8s | 0.2s |
+| LCP | 2.3s | 0.5s |
+| TBT | 0ms | 0ms |
+| CLS | 0 | 0 |
 
 Key optimizations:
 - **Lite YouTube facade** — YouTube iframe loads only on click, eliminating ~500KB of third-party JS
-- **Responsive hero images** — WebP format with 640w/1024w/1920w srcset variants
-- **Non-render-blocking fonts** — Google Fonts loaded via preload/onload pattern
+- **Responsive hero images** — WebP format with 640w/1024w/1920w srcset variants, preloaded in `<head>`
+- **Hugo image processing** — history page photos auto-resized to WebP with srcset (17 MB → ~1.5 MB)
+- **Self-hosted fonts** — Work Sans woff2 served from same origin with `<link rel="preload">`
+- **SVGO-optimized SVG logos** — nav logo reduced from 53 KB to 11 KB
 - **CSS minification + fingerprinting** — via Hugo asset pipeline
 - **HTML minification** — enabled via Hugo config
 - **Explicit image dimensions** — width/height on all `<img>` elements to prevent CLS
 - **`fetchpriority="high"`** — on hero images for faster LCP discovery
+- **Cloudflare Pages caching** — immutable cache headers for static assets, no-cache for HTML
 
 ---
 
@@ -201,7 +214,7 @@ Changes auto-reload in dev server.
 
 ## Dependencies
 
-- **Hugo Extended** 0.123.7+ (for image processing and asset pipeline)
+- **Hugo Extended** 0.141.0+ (for image processing, asset pipeline, and `try` keyword)
 - No npm, no Node.js, no database required
 
 ---
