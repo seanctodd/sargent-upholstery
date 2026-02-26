@@ -2,6 +2,10 @@ baseURL = 'https://sargentupholstery.com/'
 title = 'Sargent Upholstery Co.'
 theme = 'sargent'
 disableHugoGeneratorInject = true
+
+[services]
+  [services.googleAnalytics]
+    ID = 'G-1F6J72Q87R'
 defaultContentLanguage = 'en'
 defaultContentLanguageInSubdir = false
 
