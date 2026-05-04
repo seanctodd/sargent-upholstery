@@ -5,6 +5,20 @@
 ███████║██║  ██║██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║
 ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
 
+██╗   ██╗██████╗ ██╗  ██╗ ██████╗ ██╗      ███████╗████████╗███████╗██████╗ ██╗   ██╗
+██║   ██║██╔══██╗██║  ██║██╔═══██╗██║      ██╔════╝╚══██╔══╝██╔════╝██╔══██╗╚██╗ ██╔╝
+██║   ██║██████╔╝███████║██║   ██║██║      ███████╗   ██║   █████╗  ██████╔╝ ╚████╔╝
+██║   ██║██╔═══╝ ██╔══██║██║   ██║██║      ╚════██║   ██║   ██╔══╝  ██╔══██╗  ╚██╔╝
+╚██████╔╝██║     ██║  ██║╚██████╔╝███████╗ ███████║   ██║   ███████╗██║  ██║   ██║
+ ╚═════╝ ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚══════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝   ╚═╝
+
+ ██████╗ ██████╗
+██╔════╝██╔═══██╗
+██║     ██║   ██║
+██║     ██║   ██║
+╚██████╗╚██████╔╝██╗
+ ╚═════╝ ╚═════╝╚═╝
+
 # Sargent Upholstery Co. Website
 
 ## Executive Summary
@@ -12,6 +26,7 @@
 This repository contains a static website for **Sargent Upholstery Co.**, Jacksonville's premier automotive upholstery shop established in 1935. The site is built with **Hugo**, a fast and flexible static site generator, and features:
 
 - **Responsive design** showcasing upholstery services (automotive, fleet, marine, convertible tops, leather interiors, etc.)
+- **Fully bilingual** — complete English/Spanish support with hreflang tags and translated content
 - **Instagram integration shortcode** that fetches and displays recent Instagram posts with a client-side lightbox gallery
 - **Google Reviews integration** that fetches and displays customer reviews from Google Maps
 - **Custom Hugo theme** (`sargent`) with optimized layouts and partials
