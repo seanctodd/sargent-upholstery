@@ -42,20 +42,6 @@ type newAPIReview struct {
 	GoogleMapsURI                  string            `json:"googleMapsUri"`
 }
 
-// Legacy API response structures
-type legacyAPIResponse struct {
-	Result struct {
-		Reviews []legacyAPIReview `json:"reviews"`
-	} `json:"result"`
-}
-
-type legacyAPIReview struct {
-	AuthorName              string `json:"author_name"`
-	Rating                  int    `json:"rating"`
-	Text                    string `json:"text"`
-	RelativeTimeDescription string `json:"relative_time_description"`
-	Time                    int64  `json:"time"`
-}
 
 type fetchResult struct {
 	label  string
@@ -133,38 +119,9 @@ func extractNewAPI(data []byte) []Review {
 	return reviews
 }
 
-func extractLegacy(data []byte) []Review {
-	var resp legacyAPIResponse
-	if err := json.Unmarshal(data, &resp); err != nil {
-		return nil
-	}
-	var reviews []Review
-	for _, r := range resp.Result.Reviews {
-		id := ""
-		if r.Time != 0 {
-			id = fmt.Sprintf("legacy-%d-%s", r.Time, r.AuthorName)
-		}
-		date := time.Now().UTC().Format(time.RFC3339)
-		if r.Time != 0 {
-			date = time.Unix(r.Time, 0).UTC().Format(time.RFC3339)
-		}
-		reviews = append(reviews, Review{
-			ID:           id,
-			Author:       r.AuthorName,
-			Rating:       r.Rating,
-			Text:         r.Text,
-			Date:         date,
-			RelativeTime: r.RelativeTimeDescription,
-		})
-	}
-	return reviews
-}
-
 func extractReviews(label string, data []byte) []Review {
-	// Try new API format first — check for authorAttribution or name in first review
 	var probe struct {
 		Reviews []json.RawMessage `json:"reviews"`
-		Result  json.RawMessage   `json:"result"`
 	}
 	if err := json.Unmarshal(data, &probe); err != nil {
 		preview := string(data)
@@ -174,33 +131,17 @@ func extractReviews(label string, data []byte) []Review {
 		fmt.Fprintf(os.Stderr, "[%s] JSON parse error: %v\nBody: %s\n", label, err, preview)
 		return nil
 	}
-	if len(probe.Reviews) > 0 {
-		var first map[string]json.RawMessage
-		if json.Unmarshal(probe.Reviews[0], &first) == nil {
-			if _, ok := first["authorAttribution"]; ok {
-				reviews := extractNewAPI(data)
-				fmt.Printf("[%s] Parsed as new API: %d reviews\n", label, len(reviews))
-				return reviews
-			}
-			if _, ok := first["name"]; ok {
-				reviews := extractNewAPI(data)
-				fmt.Printf("[%s] Parsed as new API: %d reviews\n", label, len(reviews))
-				return reviews
-			}
+	if len(probe.Reviews) == 0 {
+		preview := string(data)
+		if len(preview) > 300 {
+			preview = preview[:300] + "..."
 		}
+		fmt.Fprintf(os.Stderr, "[%s] No reviews in response. Body: %s\n", label, preview)
+		return nil
 	}
-	if probe.Result != nil {
-		reviews := extractLegacy(data)
-		fmt.Printf("[%s] Parsed as legacy API: %d reviews\n", label, len(reviews))
-		return reviews
-	}
-	// Response parsed as valid JSON but matched no known format
-	preview := string(data)
-	if len(preview) > 300 {
-		preview = preview[:300] + "..."
-	}
-	fmt.Fprintf(os.Stderr, "[%s] Unrecognized response format. Body: %s\n", label, preview)
-	return nil
+	reviews := extractNewAPI(data)
+	fmt.Printf("[%s] Parsed %d reviews\n", label, len(reviews))
+	return reviews
 }
 
 func normalizeText(text string) string {
@@ -228,41 +169,33 @@ func main() {
 		os.WriteFile(dataFile, []byte("[]"), 0644)
 	}
 
-	// Fetch from 3 endpoints concurrently
-	rawResults := make([]fetchResult, 3)
+	// Fetch from 2 endpoints concurrently (legacy Places API disabled on this project)
+	rawResults := make([]fetchResult, 2)
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(2)
 
-	// Places API (New)
+	headers := map[string]string{
+		"X-Goog-Api-Key":   apiKey,
+		"X-Goog-FieldMask": "reviews",
+	}
+
+	// Places API (New) — most relevant
 	go func() {
 		defer wg.Done()
 		rawResults[0] = fetchURL(
-			"places-new",
+			"places-relevant",
 			fmt.Sprintf("https://places.googleapis.com/v1/places/%s", placeID),
-			map[string]string{
-				"X-Goog-Api-Key":   apiKey,
-				"X-Goog-FieldMask": "reviews",
-			},
+			headers,
 		)
 	}()
 
-	// Legacy API — most relevant
+	// Places API (New) — newest
 	go func() {
 		defer wg.Done()
 		rawResults[1] = fetchURL(
-			"legacy-relevant",
-			fmt.Sprintf("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&fields=reviews&reviews_sort=most_relevant&key=%s", placeID, apiKey),
-			nil,
-		)
-	}()
-
-	// Legacy API — newest
-	go func() {
-		defer wg.Done()
-		rawResults[2] = fetchURL(
-			"legacy-newest",
-			fmt.Sprintf("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&fields=reviews&reviews_sort=newest&key=%s", placeID, apiKey),
-			nil,
+			"places-newest",
+			fmt.Sprintf("https://places.googleapis.com/v1/places/%s?reviewSortOrder=NEWEST", placeID),
+			headers,
 		)
 	}()
 
