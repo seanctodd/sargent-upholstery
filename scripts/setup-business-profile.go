@@ -5,12 +5,12 @@
 //
 // Usage:
 //
-//	GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy go run scripts/setup-business-profile.go
+//	go run scripts/setup-business-profile.go /path/to/client_secret.json
 //
 // Prerequisites (do this once in Google Cloud Console):
 //  1. Enable the "My Business Account Management API" and "My Business Reviews API"
 //  2. Create an OAuth 2.0 credential → type "Desktop app"
-//  3. Copy the Client ID and Client Secret
+//  3. Download the JSON file Google provides
 //
 // After running this script, add these GitHub Actions secrets:
 //
@@ -35,6 +35,17 @@ import (
 	"strings"
 )
 
+// Google's downloaded credentials JSON format
+type credentialsFile struct {
+	Installed *oauthCredentials `json:"installed"`
+	Web       *oauthCredentials `json:"web"`
+}
+
+type oauthCredentials struct {
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret"`
+}
+
 const (
 	tokenURL    = "https://oauth2.googleapis.com/token"
 	accountsURL = "https://mybusiness.googleapis.com/v4/accounts"
@@ -43,12 +54,32 @@ const (
 )
 
 func main() {
-	clientID := os.Getenv("GOOGLE_CLIENT_ID")
-	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
-	if clientID == "" || clientSecret == "" {
-		fmt.Fprintln(os.Stderr, "Error: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set")
+	if len(os.Args) < 2 {
+		fmt.Fprintln(os.Stderr, "Usage: go run scripts/setup-business-profile.go /path/to/client_secret.json")
 		os.Exit(1)
 	}
+
+	credData, err := os.ReadFile(os.Args[1])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading credentials file: %v\n", err)
+		os.Exit(1)
+	}
+	var creds credentialsFile
+	if err := json.Unmarshal(credData, &creds); err != nil {
+		fmt.Fprintf(os.Stderr, "Error parsing credentials file: %v\n", err)
+		os.Exit(1)
+	}
+	c := creds.Installed
+	if c == nil {
+		c = creds.Web
+	}
+	if c == nil || c.ClientID == "" || c.ClientSecret == "" {
+		fmt.Fprintln(os.Stderr, "Could not find client_id/client_secret in credentials file")
+		os.Exit(1)
+	}
+	clientID := c.ClientID
+	clientSecret := c.ClientSecret
+	fmt.Printf("Loaded credentials for client: %s\n", clientID)
 
 	// Build authorization URL
 	authURL := "https://accounts.google.com/o/oauth2/v2/auth?" + url.Values{
@@ -130,12 +161,13 @@ func main() {
 	}
 
 	fmt.Println("\n========== GitHub Actions Secrets ==========")
-	fmt.Println("Add these to your repository secrets:")
+	fmt.Println("Go to: github.com/seanctodd/sargent-upholstery/settings/secrets/actions")
+	fmt.Println("Add these repository secrets:")
 	fmt.Println()
-	fmt.Println("  GOOGLE_CLIENT_ID    =", clientID)
-	fmt.Println("  GOOGLE_CLIENT_SECRET=", clientSecret)
-	fmt.Println("  GOOGLE_REFRESH_TOKEN=", tokens.RefreshToken)
-	fmt.Println("  GOOGLE_LOCATION_NAME=", locationName)
+	fmt.Printf("  GOOGLE_CLIENT_ID     = %s\n", clientID)
+	fmt.Printf("  GOOGLE_CLIENT_SECRET = %s\n", clientSecret)
+	fmt.Printf("  GOOGLE_REFRESH_TOKEN = %s\n", tokens.RefreshToken)
+	fmt.Printf("  GOOGLE_LOCATION_NAME = %s\n", locationName)
 	fmt.Println("============================================")
 }
 
