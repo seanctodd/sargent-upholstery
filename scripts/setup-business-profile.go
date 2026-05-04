@@ -1,0 +1,236 @@
+// setup-business-profile.go
+//
+// One-time setup tool to authorize the Google Business Profile API
+// and retrieve your location name + refresh token for use in CI.
+//
+// Usage:
+//
+//	GOOGLE_CLIENT_ID=xxx GOOGLE_CLIENT_SECRET=yyy go run scripts/setup-business-profile.go
+//
+// Prerequisites (do this once in Google Cloud Console):
+//  1. Enable the "My Business Account Management API" and "My Business Reviews API"
+//  2. Create an OAuth 2.0 credential → type "Desktop app"
+//  3. Copy the Client ID and Client Secret
+//
+// After running this script, add these GitHub Actions secrets:
+//
+//	GOOGLE_CLIENT_ID
+//	GOOGLE_CLIENT_SECRET
+//	GOOGLE_REFRESH_TOKEN  (printed by this script)
+//	GOOGLE_LOCATION_NAME  (printed by this script, e.g. accounts/123/locations/456)
+
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net"
+	"net/http"
+	"net/url"
+	"os"
+	"os/exec"
+	"runtime"
+	"strings"
+)
+
+const (
+	tokenURL    = "https://oauth2.googleapis.com/token"
+	accountsURL = "https://mybusiness.googleapis.com/v4/accounts"
+	scope       = "https://www.googleapis.com/auth/business.manage"
+	redirectURI = "http://localhost:8080"
+)
+
+func main() {
+	clientID := os.Getenv("GOOGLE_CLIENT_ID")
+	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
+	if clientID == "" || clientSecret == "" {
+		fmt.Fprintln(os.Stderr, "Error: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set")
+		os.Exit(1)
+	}
+
+	// Build authorization URL
+	authURL := "https://accounts.google.com/o/oauth2/v2/auth?" + url.Values{
+		"client_id":     {clientID},
+		"redirect_uri":  {redirectURI},
+		"response_type": {"code"},
+		"scope":         {scope},
+		"access_type":   {"offline"},
+		"prompt":        {"consent"},
+	}.Encode()
+
+	// Start local server to capture the redirect
+	codeCh := make(chan string, 1)
+	srv := &http.Server{Addr: ":8080"}
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		code := r.URL.Query().Get("code")
+		if code == "" {
+			fmt.Fprintln(w, "No authorization code received.")
+			return
+		}
+		fmt.Fprintln(w, "Authorization successful! You can close this tab.")
+		codeCh <- code
+	})
+
+	listener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error starting local server: %v\n", err)
+		os.Exit(1)
+	}
+	go srv.Serve(listener)
+
+	// Open browser
+	fmt.Println("Opening browser for Google authorization...")
+	fmt.Println("If the browser doesn't open, visit this URL manually:")
+	fmt.Println(authURL)
+	openBrowser(authURL)
+
+	// Wait for code
+	fmt.Println("Waiting for authorization...")
+	code := <-codeCh
+	srv.Shutdown(context.Background())
+
+	// Exchange code for tokens
+	resp, err := http.PostForm(tokenURL, url.Values{
+		"code":          {code},
+		"client_id":     {clientID},
+		"client_secret": {clientSecret},
+		"redirect_uri":  {redirectURI},
+		"grant_type":    {"authorization_code"},
+	})
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Token exchange error: %v\n", err)
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+
+	var tokens struct {
+		AccessToken  string `json:"access_token"`
+		RefreshToken string `json:"refresh_token"`
+		Error        string `json:"error"`
+	}
+	if err := json.Unmarshal(body, &tokens); err != nil || tokens.Error != "" {
+		fmt.Fprintf(os.Stderr, "Token parse error: %v\nBody: %s\n", err, body)
+		os.Exit(1)
+	}
+	if tokens.RefreshToken == "" {
+		fmt.Fprintln(os.Stderr, "No refresh token received. Try revoking access at https://myaccount.google.com/permissions and re-running.")
+		os.Exit(1)
+	}
+
+	// Fetch accounts
+	locationName, err := findLocation(tokens.AccessToken)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error fetching location: %v\n", err)
+		fmt.Println("\nCould not auto-detect location. List your locations manually and find the one matching your business.")
+		fmt.Println("Refresh token (save this):", tokens.RefreshToken)
+		os.Exit(1)
+	}
+
+	fmt.Println("\n========== GitHub Actions Secrets ==========")
+	fmt.Println("Add these to your repository secrets:")
+	fmt.Println()
+	fmt.Println("  GOOGLE_CLIENT_ID    =", clientID)
+	fmt.Println("  GOOGLE_CLIENT_SECRET=", clientSecret)
+	fmt.Println("  GOOGLE_REFRESH_TOKEN=", tokens.RefreshToken)
+	fmt.Println("  GOOGLE_LOCATION_NAME=", locationName)
+	fmt.Println("============================================")
+}
+
+func findLocation(accessToken string) (string, error) {
+	// List accounts
+	body, err := apiGet(accountsURL, accessToken)
+	if err != nil {
+		return "", err
+	}
+	var accountsResp struct {
+		Accounts []struct {
+			Name        string `json:"name"`
+			AccountName string `json:"accountName"`
+		} `json:"accounts"`
+	}
+	if err := json.Unmarshal(body, &accountsResp); err != nil {
+		return "", fmt.Errorf("parse accounts: %w", err)
+	}
+	if len(accountsResp.Accounts) == 0 {
+		return "", fmt.Errorf("no accounts found")
+	}
+
+	// Try each account's locations
+	for _, account := range accountsResp.Accounts {
+		locURL := fmt.Sprintf("https://mybusiness.googleapis.com/v4/%s/locations?readMask=name,title,storeCode,metadata", account.Name)
+		locBody, err := apiGet(locURL, accessToken)
+		if err != nil {
+			continue
+		}
+		var locsResp struct {
+			Locations []struct {
+				Name     string `json:"name"`
+				Title    string `json:"title"`
+				Metadata struct {
+					MapsURI  string `json:"mapsUri"`
+					PlaceID  string `json:"placeId"`
+				} `json:"metadata"`
+			} `json:"locations"`
+		}
+		if err := json.Unmarshal(locBody, &locsResp); err != nil {
+			continue
+		}
+		for _, loc := range locsResp.Locations {
+			if strings.Contains(strings.ToLower(loc.Title), "sargent") ||
+				strings.Contains(loc.Metadata.MapsURI, "ChIJvQmmCSS35YgR") ||
+				loc.Metadata.PlaceID == "ChIJvQmmCSS35YgR-3H9ajzGCHk" {
+				fmt.Printf("Found location: %s (%s)\n", loc.Title, loc.Name)
+				return loc.Name, nil
+			}
+		}
+		// If only one location, use it
+		if len(locsResp.Locations) == 1 {
+			loc := locsResp.Locations[0]
+			fmt.Printf("Using only location found: %s (%s)\n", loc.Title, loc.Name)
+			return loc.Name, nil
+		}
+		// Print all locations for manual selection
+		if len(locsResp.Locations) > 0 {
+			fmt.Printf("Locations in account %s (%s):\n", account.AccountName, account.Name)
+			for _, loc := range locsResp.Locations {
+				fmt.Printf("  %s  →  %s\n", loc.Title, loc.Name)
+			}
+		}
+	}
+	return "", fmt.Errorf("could not find Sargent Upholstery location — see locations printed above and set GOOGLE_LOCATION_NAME manually")
+}
+
+func apiGet(url, accessToken string) ([]byte, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("Authorization", "Bearer "+accessToken)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("HTTP %d: %s", resp.StatusCode, body)
+	}
+	return body, nil
+}
+
+func openBrowser(url string) {
+	var cmd string
+	var args []string
+	switch runtime.GOOS {
+	case "darwin":
+		cmd = "open"
+		args = []string{url}
+	case "windows":
+		cmd = "cmd"
+		args = []string{"/c", "start", url}
+	default:
+		cmd = "xdg-open"
+		args = []string{url}
+	}
+	exec.Command(cmd, args...).Start()
+}
