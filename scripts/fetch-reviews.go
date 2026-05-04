@@ -57,20 +57,40 @@ type legacyAPIReview struct {
 	Time                    int64  `json:"time"`
 }
 
-func fetchURL(url string, headers map[string]string) ([]byte, error) {
+type fetchResult struct {
+	label  string
+	data   []byte
+	status int
+	err    error
+}
+
+func fetchURL(label, url string, headers map[string]string) fetchResult {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, err
+		return fetchResult{label: label, err: err}
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return fetchResult{label: label, err: err}
 	}
 	defer resp.Body.Close()
-	return io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fetchResult{label: label, status: resp.StatusCode, err: err}
+	}
+	result := fetchResult{label: label, data: body, status: resp.StatusCode}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		// Truncate error body to 500 chars to keep logs readable
+		preview := string(body)
+		if len(preview) > 500 {
+			preview = preview[:500] + "..."
+		}
+		result.err = fmt.Errorf("HTTP %d: %s", resp.StatusCode, preview)
+	}
+	return result
 }
 
 func extractNewAPI(data []byte) []Review {
@@ -140,29 +160,46 @@ func extractLegacy(data []byte) []Review {
 	return reviews
 }
 
-func extractReviews(data []byte) []Review {
+func extractReviews(label string, data []byte) []Review {
 	// Try new API format first — check for authorAttribution or name in first review
 	var probe struct {
 		Reviews []json.RawMessage `json:"reviews"`
 		Result  json.RawMessage   `json:"result"`
 	}
-	if json.Unmarshal(data, &probe) != nil {
+	if err := json.Unmarshal(data, &probe); err != nil {
+		preview := string(data)
+		if len(preview) > 300 {
+			preview = preview[:300] + "..."
+		}
+		fmt.Fprintf(os.Stderr, "[%s] JSON parse error: %v\nBody: %s\n", label, err, preview)
 		return nil
 	}
 	if len(probe.Reviews) > 0 {
 		var first map[string]json.RawMessage
 		if json.Unmarshal(probe.Reviews[0], &first) == nil {
 			if _, ok := first["authorAttribution"]; ok {
-				return extractNewAPI(data)
+				reviews := extractNewAPI(data)
+				fmt.Printf("[%s] Parsed as new API: %d reviews\n", label, len(reviews))
+				return reviews
 			}
 			if _, ok := first["name"]; ok {
-				return extractNewAPI(data)
+				reviews := extractNewAPI(data)
+				fmt.Printf("[%s] Parsed as new API: %d reviews\n", label, len(reviews))
+				return reviews
 			}
 		}
 	}
 	if probe.Result != nil {
-		return extractLegacy(data)
+		reviews := extractLegacy(data)
+		fmt.Printf("[%s] Parsed as legacy API: %d reviews\n", label, len(reviews))
+		return reviews
 	}
+	// Response parsed as valid JSON but matched no known format
+	preview := string(data)
+	if len(preview) > 300 {
+		preview = preview[:300] + "..."
+	}
+	fmt.Fprintf(os.Stderr, "[%s] Unrecognized response format. Body: %s\n", label, preview)
 	return nil
 }
 
@@ -192,64 +229,71 @@ func main() {
 	}
 
 	// Fetch from 3 endpoints concurrently
-	type fetchResult struct {
-		data []byte
-		err  error
-	}
-	results := make([]fetchResult, 3)
+	rawResults := make([]fetchResult, 3)
 	var wg sync.WaitGroup
-
 	wg.Add(3)
 
 	// Places API (New)
 	go func() {
 		defer wg.Done()
-		data, err := fetchURL(
+		rawResults[0] = fetchURL(
+			"places-new",
 			fmt.Sprintf("https://places.googleapis.com/v1/places/%s", placeID),
 			map[string]string{
 				"X-Goog-Api-Key":   apiKey,
 				"X-Goog-FieldMask": "reviews",
 			},
 		)
-		results[0] = fetchResult{data, err}
 	}()
 
 	// Legacy API — most relevant
 	go func() {
 		defer wg.Done()
-		data, err := fetchURL(
+		rawResults[1] = fetchURL(
+			"legacy-relevant",
 			fmt.Sprintf("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&fields=reviews&reviews_sort=most_relevant&key=%s", placeID, apiKey),
 			nil,
 		)
-		results[1] = fetchResult{data, err}
 	}()
 
 	// Legacy API — newest
 	go func() {
 		defer wg.Done()
-		data, err := fetchURL(
+		rawResults[2] = fetchURL(
+			"legacy-newest",
 			fmt.Sprintf("https://maps.googleapis.com/maps/api/place/details/json?place_id=%s&fields=reviews&reviews_sort=newest&key=%s", placeID, apiKey),
 			nil,
 		)
-		results[2] = fetchResult{data, err}
 	}()
 
 	wg.Wait()
 
-	// Extract reviews from all responses
+	// Log fetch results and extract reviews
 	var candidates []Review
-	for _, r := range results {
-		if r.err != nil || r.data == nil {
+	fetchOK := 0
+	for _, r := range rawResults {
+		if r.err != nil {
+			fmt.Fprintf(os.Stderr, "[%s] Fetch error: %v\n", r.label, r.err)
 			continue
 		}
-		candidates = append(candidates, extractReviews(r.data)...)
+		fmt.Printf("[%s] HTTP %d, %d bytes received\n", r.label, r.status, len(r.data))
+		fetchOK++
+		extracted := extractReviews(r.label, r.data)
+		candidates = append(candidates, extracted...)
 	}
+
+	if fetchOK == 0 {
+		fmt.Fprintln(os.Stderr, "All endpoints failed — no reviews fetched")
+		os.Exit(1)
+	}
+	fmt.Printf("Total candidates before filtering: %d\n", len(candidates))
 
 	// Load existing reviews
 	var existing []Review
 	if data, err := os.ReadFile(dataFile); err == nil {
 		json.Unmarshal(data, &existing)
 	}
+	fmt.Printf("Existing reviews in file: %d\n", len(existing))
 
 	// Build dedup sets
 	existingIDs := make(map[string]bool)
@@ -263,20 +307,24 @@ func main() {
 		}
 	}
 
-	// Filter and deduplicate
-	newCount := 0
+	// Filter and deduplicate with per-reason counts
+	skippedRating, skippedShort, skippedDup, newCount := 0, 0, 0, 0
 	for _, r := range candidates {
 		if r.Rating != 5 {
+			skippedRating++
 			continue
 		}
 		if len(strings.Fields(r.Text)) < minWords {
+			skippedShort++
 			continue
 		}
 		if r.ID != "" && existingIDs[r.ID] {
+			skippedDup++
 			continue
 		}
 		norm := normalizeText(r.Text)
 		if existingTexts[norm] {
+			skippedDup++
 			continue
 		}
 		existing = append(existing, r)
@@ -284,6 +332,9 @@ func main() {
 		existingTexts[norm] = true
 		newCount++
 	}
+
+	fmt.Printf("Filtered out: %d not 5-star, %d too short (<%d words), %d duplicates\n",
+		skippedRating, skippedShort, minWords, skippedDup)
 
 	// Sort by date descending
 	sort.Slice(existing, func(i, j int) bool {
