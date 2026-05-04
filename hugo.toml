@@ -3,6 +3,10 @@ title = 'Sargent Upholstery Co.'
 theme = 'sargent'
 disableHugoGeneratorInject = true
 
+[caches]
+  [caches.getresource]
+    maxAge = "0s"
+
 [services]
   [services.googleAnalytics]
     ID = 'G-1F6J72Q87R'
