@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -48,6 +49,34 @@ type fetchResult struct {
 	data   []byte
 	status int
 	err    error
+}
+
+func fetchPost(label, url string, headers map[string]string, body string) fetchResult {
+	req, err := http.NewRequest("POST", url, bytes.NewBufferString(body))
+	if err != nil {
+		return fetchResult{label: label, err: err}
+	}
+	for k, v := range headers {
+		req.Header.Set(k, v)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return fetchResult{label: label, err: err}
+	}
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fetchResult{label: label, status: resp.StatusCode, err: err}
+	}
+	result := fetchResult{label: label, data: respBody, status: resp.StatusCode}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		preview := string(respBody)
+		if len(preview) > 500 {
+			preview = preview[:500] + "..."
+		}
+		result.err = fmt.Errorf("HTTP %d: %s", resp.StatusCode, preview)
+	}
+	return result
 }
 
 func fetchURL(label, url string, headers map[string]string) fetchResult {
@@ -174,28 +203,31 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	headers := map[string]string{
+	getHeaders := map[string]string{
 		"X-Goog-Api-Key":   apiKey,
 		"X-Goog-FieldMask": "reviews",
 	}
+	postHeaders := map[string]string{
+		"X-Goog-Api-Key":   apiKey,
+		"X-Goog-FieldMask": "reviews",
+		"Content-Type":     "application/json",
+	}
+	placeURL := fmt.Sprintf("https://places.googleapis.com/v1/places/%s", placeID)
 
-	// Places API (New) — most relevant
+	// Places API (New) — most relevant (GET)
 	go func() {
 		defer wg.Done()
-		rawResults[0] = fetchURL(
-			"places-relevant",
-			fmt.Sprintf("https://places.googleapis.com/v1/places/%s", placeID),
-			headers,
-		)
+		rawResults[0] = fetchURL("places-relevant", placeURL, getHeaders)
 	}()
 
-	// Places API (New) — newest
+	// Places API (New) — newest (POST with body, reviewSortOrder not supported as URL param)
 	go func() {
 		defer wg.Done()
-		rawResults[1] = fetchURL(
+		rawResults[1] = fetchPost(
 			"places-newest",
-			fmt.Sprintf("https://places.googleapis.com/v1/places/%s?reviewSortOrder=NEWEST", placeID),
-			headers,
+			placeURL,
+			postHeaders,
+			`{"reviewSortOrder":"NEWEST"}`,
 		)
 	}()
 
