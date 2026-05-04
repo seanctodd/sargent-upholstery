@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -10,7 +9,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -49,34 +47,6 @@ type fetchResult struct {
 	data   []byte
 	status int
 	err    error
-}
-
-func fetchPost(label, url string, headers map[string]string, body string) fetchResult {
-	req, err := http.NewRequest("POST", url, bytes.NewBufferString(body))
-	if err != nil {
-		return fetchResult{label: label, err: err}
-	}
-	for k, v := range headers {
-		req.Header.Set(k, v)
-	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return fetchResult{label: label, err: err}
-	}
-	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fetchResult{label: label, status: resp.StatusCode, err: err}
-	}
-	result := fetchResult{label: label, data: respBody, status: resp.StatusCode}
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		preview := string(respBody)
-		if len(preview) > 500 {
-			preview = preview[:500] + "..."
-		}
-		result.err = fmt.Errorf("HTTP %d: %s", resp.StatusCode, preview)
-	}
-	return result
 }
 
 func fetchURL(label, url string, headers map[string]string) fetchResult {
@@ -198,40 +168,15 @@ func main() {
 		os.WriteFile(dataFile, []byte("[]"), 0644)
 	}
 
-	// Fetch from 2 endpoints concurrently (legacy Places API disabled on this project)
-	rawResults := make([]fetchResult, 2)
-	var wg sync.WaitGroup
-	wg.Add(2)
-
-	getHeaders := map[string]string{
+	// Places API (New) — most relevant reviews (only sorting available via REST)
+	// Note: reviewSortOrder=NEWEST is not supported via the places.get REST endpoint.
+	// To fetch newest reviews, the Google Business Profile API with OAuth2 would be required.
+	headers := map[string]string{
 		"X-Goog-Api-Key":   apiKey,
 		"X-Goog-FieldMask": "reviews",
-	}
-	postHeaders := map[string]string{
-		"X-Goog-Api-Key":   apiKey,
-		"X-Goog-FieldMask": "reviews",
-		"Content-Type":     "application/json",
 	}
 	placeURL := fmt.Sprintf("https://places.googleapis.com/v1/places/%s", placeID)
-
-	// Places API (New) — most relevant (GET)
-	go func() {
-		defer wg.Done()
-		rawResults[0] = fetchURL("places-relevant", placeURL, getHeaders)
-	}()
-
-	// Places API (New) — newest (POST with body, reviewSortOrder not supported as URL param)
-	go func() {
-		defer wg.Done()
-		rawResults[1] = fetchPost(
-			"places-newest",
-			placeURL,
-			postHeaders,
-			`{"reviewSortOrder":"NEWEST"}`,
-		)
-	}()
-
-	wg.Wait()
+	rawResults := []fetchResult{fetchURL("places-relevant", placeURL, headers)}
 
 	// Log fetch results and extract reviews
 	var candidates []Review
