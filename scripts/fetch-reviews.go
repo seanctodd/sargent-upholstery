@@ -209,8 +209,14 @@ func main() {
 	dataFile := filepath.Join(scriptDir, "data", "reviews.json")
 
 	if _, err := os.Stat(dataFile); os.IsNotExist(err) {
-		os.MkdirAll(filepath.Dir(dataFile), 0755)
-		os.WriteFile(dataFile, []byte("[]"), 0644)
+		if err := os.MkdirAll(filepath.Dir(dataFile), 0755); err != nil {
+			fmt.Fprintf(os.Stderr, "Error creating data dir: %v\n", err)
+			os.Exit(1)
+		}
+		if err := os.WriteFile(dataFile, []byte("[]"), 0644); err != nil {
+			fmt.Fprintf(os.Stderr, "Error creating %s: %v\n", dataFile, err)
+			os.Exit(1)
+		}
 	}
 
 	fmt.Println("Using Business Profile API...")
@@ -228,10 +234,17 @@ func main() {
 	}
 	fmt.Printf("Total candidates before filtering: %d\n", len(candidates))
 
-	// Load existing reviews
+	// Load existing reviews. A non-empty but unparseable file means something is
+	// wrong — refuse to proceed rather than silently overwrite accumulated history.
 	var existing []Review
 	if data, err := os.ReadFile(dataFile); err == nil {
-		json.Unmarshal(data, &existing)
+		if len(strings.TrimSpace(string(data))) > 0 {
+			if err := json.Unmarshal(data, &existing); err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %s is not valid JSON: %v\n", dataFile, err)
+				fmt.Fprintln(os.Stderr, "Refusing to overwrite to protect existing reviews.")
+				os.Exit(1)
+			}
+		}
 	}
 	fmt.Printf("Existing reviews in file: %d\n", len(existing))
 
@@ -268,7 +281,9 @@ func main() {
 			continue
 		}
 		existing = append(existing, r)
-		existingIDs[r.ID] = true
+		if r.ID != "" {
+			existingIDs[r.ID] = true
+		}
 		existingTexts[norm] = true
 		newCount++
 	}
