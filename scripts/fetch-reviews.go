@@ -16,7 +16,6 @@ import (
 var httpClient = &http.Client{Timeout: 30 * time.Second}
 
 const (
-	placeID  = "ChIJvQmmCSS35YgR-3H9ajzGCHk"
 	minWords = 20
 )
 
@@ -28,21 +27,6 @@ type Review struct {
 	Date          string `json:"date"`
 	RelativeTime  string `json:"relativeTime"`
 	GoogleMapsURI string `json:"googleMapsUri"`
-}
-
-// ---- Places API (New) structures ----
-
-type placesAPIResponse struct {
-	Reviews []placesAPIReview `json:"reviews"`
-}
-
-type placesAPIReview struct {
-	Name                           string            `json:"name"`
-	Rating                         int               `json:"rating"`
-	Text                           json.RawMessage   `json:"text"`
-	AuthorAttribution              map[string]string `json:"authorAttribution"`
-	RelativePublishTimeDescription string            `json:"relativePublishTimeDescription"`
-	GoogleMapsURI                  string            `json:"googleMapsUri"`
 }
 
 // ---- Business Profile API structures ----
@@ -116,67 +100,6 @@ func fetchURL(label, url string, headers map[string]string) fetchResult {
 		result.err = fmt.Errorf("HTTP %d: %s", resp.StatusCode, preview)
 	}
 	return result
-}
-
-// ---- Places API extraction ----
-
-func extractPlacesReviews(label string, data []byte) []Review {
-	var probe struct {
-		Reviews []json.RawMessage `json:"reviews"`
-	}
-	if err := json.Unmarshal(data, &probe); err != nil {
-		preview := string(data)
-		if len(preview) > 300 {
-			preview = preview[:300] + "..."
-		}
-		fmt.Fprintf(os.Stderr, "[%s] JSON parse error: %v\nBody: %s\n", label, err, preview)
-		return nil
-	}
-	if len(probe.Reviews) == 0 {
-		preview := string(data)
-		if len(preview) > 300 {
-			preview = preview[:300] + "..."
-		}
-		fmt.Fprintf(os.Stderr, "[%s] No reviews in response. Body: %s\n", label, preview)
-		return nil
-	}
-	var resp placesAPIResponse
-	if err := json.Unmarshal(data, &resp); err != nil {
-		return nil
-	}
-	now := time.Now().UTC().Format(time.RFC3339)
-	var reviews []Review
-	for _, r := range resp.Reviews {
-		text := ""
-		if len(r.Text) > 0 {
-			var textObj struct {
-				Text string `json:"text"`
-			}
-			if json.Unmarshal(r.Text, &textObj) == nil && textObj.Text != "" {
-				text = textObj.Text
-			} else {
-				var s string
-				if json.Unmarshal(r.Text, &s) == nil {
-					text = s
-				}
-			}
-		}
-		author := ""
-		if r.AuthorAttribution != nil {
-			author = r.AuthorAttribution["displayName"]
-		}
-		reviews = append(reviews, Review{
-			ID:            r.Name,
-			Author:        author,
-			Rating:        r.Rating,
-			Text:          text,
-			Date:          now,
-			RelativeTime:  r.RelativePublishTimeDescription,
-			GoogleMapsURI: r.GoogleMapsURI,
-		})
-	}
-	fmt.Printf("[%s] Parsed %d reviews\n", label, len(reviews))
-	return reviews
 }
 
 // ---- Business Profile API ----
@@ -267,15 +190,14 @@ func normalizeText(text string) string {
 // ---- Main ----
 
 func main() {
-	apiKey := os.Getenv("GOOGLE_API_KEY")
 	clientID := os.Getenv("GOOGLE_CLIENT_ID")
 	clientSecret := os.Getenv("GOOGLE_CLIENT_SECRET")
 	refreshToken := os.Getenv("GOOGLE_REFRESH_TOKEN")
 	locationName := os.Getenv("GOOGLE_LOCATION_NAME")
 
-	if apiKey == "" && (clientID == "" || clientSecret == "" || refreshToken == "" || locationName == "") {
-		fmt.Println("No credentials set, skipping review fetch")
-		fmt.Println("Set GOOGLE_API_KEY for Places API, or set GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN + GOOGLE_LOCATION_NAME for Business Profile API")
+	if clientID == "" || clientSecret == "" || refreshToken == "" || locationName == "" {
+		fmt.Println("Business Profile API credentials not set, skipping review fetch")
+		fmt.Println("Set GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN + GOOGLE_LOCATION_NAME")
 		os.Exit(0)
 	}
 
@@ -291,39 +213,14 @@ func main() {
 		os.WriteFile(dataFile, []byte("[]"), 0644)
 	}
 
-	var candidates []Review
-
-	// Business Profile API — newest first, up to 50 per page (preferred when available)
-	if clientID != "" && clientSecret != "" && refreshToken != "" && locationName != "" {
-		fmt.Println("Using Business Profile API...")
-		accessToken, err := getAccessToken(clientID, clientSecret, refreshToken)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to get access token: %v\n", err)
-			fmt.Fprintln(os.Stderr, "Falling back to Places API...")
-		} else {
-			fmt.Println("Access token obtained")
-			bpReviews := fetchBusinessProfileReviews(locationName, accessToken)
-			candidates = append(candidates, bpReviews...)
-		}
+	fmt.Println("Using Business Profile API...")
+	accessToken, err := getAccessToken(clientID, clientSecret, refreshToken)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to get access token: %v\n", err)
+		os.Exit(1)
 	}
-
-	// Places API (New) — most relevant (fallback or supplement)
-	if apiKey != "" {
-		fmt.Println("Using Places API (most relevant)...")
-		result := fetchURL("places-relevant",
-			fmt.Sprintf("https://places.googleapis.com/v1/places/%s", placeID),
-			map[string]string{
-				"X-Goog-Api-Key":   apiKey,
-				"X-Goog-FieldMask": "reviews",
-			},
-		)
-		if result.err != nil {
-			fmt.Fprintf(os.Stderr, "[places-relevant] Fetch error: %v\n", result.err)
-		} else {
-			fmt.Printf("[places-relevant] HTTP %d, %d bytes received\n", result.status, len(result.data))
-			candidates = append(candidates, extractPlacesReviews("places-relevant", result.data)...)
-		}
-	}
+	fmt.Println("Access token obtained")
+	candidates := fetchBusinessProfileReviews(locationName, accessToken)
 
 	if len(candidates) == 0 {
 		fmt.Fprintln(os.Stderr, "No reviews fetched from any source")
