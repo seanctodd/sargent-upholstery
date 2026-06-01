@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	mediaLimit = 20
-	graphBase  = "https://graph.instagram.com"
+	mediaLimit   = 20
+	graphBase    = "https://graph.instagram.com"
+	mediaBaseURL = "https://media.sargentupholstery.com"
 )
 
 var httpClient = &http.Client{Timeout: 30 * time.Second}
@@ -28,6 +29,7 @@ type Post struct {
 	Timestamp string `json:"timestamp"`
 	Image     string `json:"image"`
 	MediaType string `json:"mediaType"`
+	Video     string `json:"video,omitempty"`
 }
 
 // mediaItem mirrors one entry of the Graph API /me/media response.
@@ -181,6 +183,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	// reels/ holds the MP4s this run; recreate it fresh so it mirrors the current
+	// feed exactly (makes the CI `aws s3 sync --delete` correct). It is .gitignored.
+	reelsDir := "reels"
+	if err := os.RemoveAll(reelsDir); err != nil {
+		fmt.Fprintf(os.Stderr, "could not clear %s: %v\n", reelsDir, err)
+		os.Exit(1)
+	}
+	if err := os.MkdirAll(reelsDir, 0755); err != nil {
+		fmt.Fprintf(os.Stderr, "mkdir %s error: %v\n", reelsDir, err)
+		os.Exit(1)
+	}
+
 	// 3. Download images + build metadata.
 	var posts []Post
 	keep := map[string]bool{}
@@ -205,14 +219,25 @@ func main() {
 			fmt.Fprintf(os.Stderr, "warning %s: download failed, keeping cached image: %v\n", it.ID, err)
 		}
 		keep[fileName] = true
-		posts = append(posts, Post{
+		post := Post{
 			ID:        it.ID,
 			Caption:   it.Caption,
 			Permalink: it.Permalink,
 			Timestamp: it.Timestamp,
 			Image:     rel,
 			MediaType: it.MediaType,
-		})
+		}
+		// For video posts, also download the MP4 locally; CI uploads reels/ to R2.
+		// On failure the post still renders as its poster image (Video stays empty).
+		if it.MediaType == "VIDEO" && it.MediaURL != "" {
+			mp4 := filepath.Join(reelsDir, it.ID+".mp4")
+			if err := downloadFile(it.MediaURL, mp4); err != nil {
+				fmt.Fprintf(os.Stderr, "warning %s: video download failed, showing poster only: %v\n", it.ID, err)
+			} else {
+				post.Video = mediaBaseURL + "/reels/" + it.ID + ".mp4"
+			}
+		}
+		posts = append(posts, post)
 	}
 	if len(posts) == 0 {
 		fmt.Fprintln(os.Stderr, "No images available; leaving existing gallery untouched")
