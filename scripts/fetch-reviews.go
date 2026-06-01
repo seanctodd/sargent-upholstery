@@ -237,7 +237,7 @@ func fetchBusinessProfileReviews(locationName, accessToken string) []Review {
 		for _, r := range resp.Reviews {
 			date := r.UpdateTime
 			if date == "" {
-				date = time.Now().UTC().Format(time.RFC3339)
+				date = r.CreateTime
 			}
 			all = append(all, Review{
 				ID:     r.Name,
