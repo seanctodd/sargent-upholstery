@@ -37,7 +37,7 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 - HTML5 / CSS3 / Vanilla JavaScript
 - Hugo asset pipeline (CSS minification + fingerprinting, image processing with WebP + srcset)
 - Instagram Web API integration (build-time image processing)
-- Google Places API (build-time review fetching)
+- Google Business Profile API v4 (build-time review fetching, via OAuth 2.0)
 - Cloudflare Pages hosting with GitHub Actions for scheduled review fetching
 - Zero database requirements
 
