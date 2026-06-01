@@ -219,21 +219,6 @@ func main() {
 		}
 	}
 
-	fmt.Println("Using Business Profile API...")
-	accessToken, err := getAccessToken(clientID, clientSecret, refreshToken)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to get access token: %v\n", err)
-		os.Exit(1)
-	}
-	fmt.Println("Access token obtained")
-	candidates := fetchBusinessProfileReviews(locationName, accessToken)
-
-	if len(candidates) == 0 {
-		fmt.Fprintln(os.Stderr, "No reviews fetched from any source")
-		os.Exit(1)
-	}
-	fmt.Printf("Total candidates before filtering: %d\n", len(candidates))
-
 	// Load existing reviews. A non-empty but unparseable file means something is
 	// wrong — refuse to proceed rather than silently overwrite accumulated history.
 	var existing []Review
@@ -245,8 +230,26 @@ func main() {
 				os.Exit(1)
 			}
 		}
+	} else {
+		fmt.Fprintf(os.Stderr, "Error reading %s: %v\n", dataFile, err)
+		os.Exit(1)
 	}
 	fmt.Printf("Existing reviews in file: %d\n", len(existing))
+
+	fmt.Println("Using Business Profile API...")
+	accessToken, err := getAccessToken(clientID, clientSecret, refreshToken)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to get access token: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println("Access token obtained")
+	candidates := fetchBusinessProfileReviews(locationName, accessToken)
+
+	if len(candidates) == 0 {
+		fmt.Fprintln(os.Stderr, "No reviews fetched from Business Profile API")
+		os.Exit(1)
+	}
+	fmt.Printf("Total candidates before filtering: %d\n", len(candidates))
 
 	// Build dedup sets
 	existingIDs := make(map[string]bool)
