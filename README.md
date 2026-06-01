@@ -83,7 +83,7 @@ The site is hosted on **Cloudflare Pages**, which builds and deploys automatical
 - **Environment variable:** `HUGO_VERSION` = `0.147.8`
 
 A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetch fresh Google Reviews:
-1. Fetches reviews via `scripts/fetch-reviews.go` (requires `GOOGLE_API_KEY` secret)
+1. Fetches reviews via `scripts/fetch-reviews.go` (requires the four `GOOGLE_*` OAuth secrets)
 2. Commits updated `data/reviews.json` back to the repo
 3. The commit triggers a Cloudflare Pages rebuild automatically
 
@@ -91,10 +91,25 @@ A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetc
 
 ### Google Reviews Setup
 
-The workflow fetches reviews from the Google Places API. To configure:
-1. Create a Google API key with Places API access
-2. Add it as a repository secret named `GOOGLE_API_KEY`
-3. Reviews are saved to `data/reviews.json` and displayed on the homepage
+The workflow fetches reviews from the **Google Business Profile API v4**
+(`accounts.locations.reviews`), which returns the full set of reviews newest-first.
+This API uses **OAuth 2.0**, not a plain API key. One-time setup:
+
+1. In Google Cloud Console, enable the **My Business Account Management API** and
+   **My Business Reviews API** (v4 access must be granted by Google via their
+   access-request form).
+2. Create an **OAuth 2.0 credential of type "Desktop app"** and download the
+   `client_secret_*.json` file.
+3. Run the setup helper, which authorizes in your browser and prints the secrets:
+   ```bash
+   go run scripts/setup-business-profile.go /path/to/client_secret.json
+   ```
+4. Add the four printed values as GitHub Actions repository secrets:
+   `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`,
+   `GOOGLE_LOCATION_NAME`.
+
+Reviews are filtered to 5-star with 20+ words, saved to `data/reviews.json`, and
+displayed on the homepage.
 
 ---
 
@@ -121,7 +136,8 @@ sargent-upholstery/
 ├── data/
 │   └── reviews.json            # Google Reviews (fetched at build time)
 ├── scripts/
-│   └── fetch-reviews.go        # Google Reviews fetch script
+│   ├── fetch-reviews.go        # Google Reviews fetch script (Business Profile v4)
+│   └── setup-business-profile.go  # One-time OAuth setup → prints CI secrets
 ├── static/
 │   ├── favicon.ico
 │   ├── fonts/                  # Self-hosted Work Sans woff2
@@ -139,8 +155,7 @@ sargent-upholstery/
 │   │   ├── partials/           # Reusable components (nav, footer, head, schema, reviews)
 │   │   └── shortcodes/         # Custom shortcodes
 │   │       ├── img.html               # Responsive image shortcode (WebP + srcset)
-│   │       ├── instagram-gallery.html
-│   │       └── google-reviews.html
+│   │       └── instagram-gallery.html
 │   └── static/
 │       └── js/main.js          # Lite YouTube facade + lightbox JS
 ├── .github/workflows/
