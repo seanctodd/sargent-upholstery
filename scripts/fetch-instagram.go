@@ -91,9 +91,11 @@ func persistToken(token string) error {
 
 // fetchMedia returns the most recent media items (newest first, as the API orders them).
 func fetchMedia(token string) ([]mediaItem, error) {
-	fields := "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp"
-	u := fmt.Sprintf("%s/me/media?fields=%s&limit=%d&access_token=%s",
-		graphBase, fields, mediaLimit, url.QueryEscape(token))
+	q := url.Values{}
+	q.Set("fields", "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp")
+	q.Set("limit", fmt.Sprintf("%d", mediaLimit))
+	q.Set("access_token", token)
+	u := graphBase + "/me/media?" + q.Encode()
 	resp, err := httpClient.Get(u)
 	if err != nil {
 		return nil, err
@@ -126,13 +128,18 @@ func downloadFile(fileURL, dst string) error {
 	if err := os.MkdirAll(filepath.Dir(dst), 0755); err != nil {
 		return err
 	}
-	f, err := os.Create(dst)
+	tmp, err := os.CreateTemp(filepath.Dir(dst), ".tmp-*")
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-	_, err = io.Copy(f, resp.Body)
-	return err
+	tmpName := tmp.Name()
+	_, copyErr := io.Copy(tmp, resp.Body)
+	closeErr := tmp.Close()
+	if copyErr != nil || closeErr != nil {
+		os.Remove(tmpName)
+		return fmt.Errorf("write error: %v / %v", copyErr, closeErr)
+	}
+	return os.Rename(tmpName, dst)
 }
 
 func main() {
@@ -213,7 +220,10 @@ func main() {
 	}
 
 	// 4. Prune images no longer referenced.
-	entries, _ := os.ReadDir(imgDir)
+	entries, err := os.ReadDir(imgDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "warning: could not read %s for pruning: %v\n", imgDir, err)
+	}
 	for _, e := range entries {
 		if !keep[e.Name()] {
 			if err := os.Remove(filepath.Join(imgDir, e.Name())); err == nil {
