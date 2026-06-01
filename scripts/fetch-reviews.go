@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+var httpClient = &http.Client{Timeout: 30 * time.Second}
+
 const (
 	placeID  = "ChIJvQmmCSS35YgR-3H9ajzGCHk"
 	minWords = 20
@@ -96,7 +98,7 @@ func fetchURL(label, url string, headers map[string]string) fetchResult {
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return fetchResult{label: label, err: err}
 	}
@@ -180,7 +182,7 @@ func extractPlacesReviews(label string, data []byte) []Review {
 // ---- Business Profile API ----
 
 func getAccessToken(clientID, clientSecret, refreshToken string) (string, error) {
-	resp, err := http.PostForm("https://oauth2.googleapis.com/token", url.Values{
+	resp, err := httpClient.PostForm("https://oauth2.googleapis.com/token", url.Values{
 		"client_id":     {clientID},
 		"client_secret": {clientSecret},
 		"refresh_token": {refreshToken},
