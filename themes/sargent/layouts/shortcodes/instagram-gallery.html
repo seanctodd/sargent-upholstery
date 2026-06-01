@@ -60,6 +60,7 @@
       lbImg.style.display = 'none';
       lbVideo.poster = item.getAttribute('data-large');
       lbVideo.src = video;
+      lbVideo.setAttribute('aria-label', item.getAttribute('data-caption') || '{{ i18n "ig_post_alt" }}');
       lbVideo.style.display = '';
     } else {
       lbVideo.removeAttribute('src');
@@ -81,6 +82,10 @@
 
   function close() {
     lbVideo.pause();
+    lbVideo.removeAttribute('src');
+    lbVideo.load();
+    lbVideo.style.display = 'none';
+    lbImg.style.display = '';
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
     if (triggerEl) {
@@ -108,13 +113,30 @@
     if (e.key === 'ArrowLeft') show(current - 1);
     if (e.key === 'ArrowRight') show(current + 1);
     if (e.key === 'Tab') {
-      var idx = focusable.indexOf(document.activeElement);
-      if (e.shiftKey) {
-        e.preventDefault();
-        focusable[(idx - 1 + focusable.length) % focusable.length].focus();
+      if (lbVideo.style.display !== 'none') {
+        // Video open: let Tab move through the native video controls; only wrap
+        // at the lightbox boundary so focus can't escape.
+        var all = Array.prototype.slice.call(lightbox.querySelectorAll(
+          'button, [href], video, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )).filter(function (el) { return !el.disabled; });
+        var first = all[0];
+        var last = all[all.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
       } else {
-        e.preventDefault();
-        focusable[(idx + 1) % focusable.length].focus();
+        var idx = focusable.indexOf(document.activeElement);
+        if (e.shiftKey) {
+          e.preventDefault();
+          focusable[(idx - 1 + focusable.length) % focusable.length].focus();
+        } else {
+          e.preventDefault();
+          focusable[(idx + 1) % focusable.length].focus();
+        }
       }
     }
   });
