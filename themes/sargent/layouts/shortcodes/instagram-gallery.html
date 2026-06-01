@@ -60,6 +60,7 @@
       lbImg.style.display = 'none';
       lbVideo.poster = item.getAttribute('data-large');
       lbVideo.src = video;
+      lbVideo.load();
       lbVideo.setAttribute('aria-label', item.getAttribute('data-caption') || '{{ i18n "ig_post_alt" }}');
       lbVideo.style.display = '';
     } else {
