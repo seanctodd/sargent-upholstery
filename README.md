@@ -36,7 +36,7 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 - Hugo (static site generator)
 - HTML5 / CSS3 / Vanilla JavaScript
 - Hugo asset pipeline (CSS minification + fingerprinting, image processing with WebP + srcset)
-- Instagram Web API integration (build-time image processing)
+- Instagram Graph API (official; weekly fetch committed to the repo, then build-time image processing)
 - Google Business Profile API v4 (build-time review fetching, via OAuth 2.0)
 - Cloudflare Pages hosting with GitHub Actions for scheduled review fetching
 - Zero database requirements
@@ -134,9 +134,11 @@ sargent-upholstery/
 │       ├── fleet-services.md
 │       └── marine.md
 ├── data/
-│   └── reviews.json            # Google Reviews (fetched at build time)
+│   ├── reviews.json            # Google Reviews (fetched by CI)
+│   └── instagram.json          # Instagram posts metadata (fetched by CI)
 ├── scripts/
 │   ├── fetch-reviews.go        # Google Reviews fetch script (Business Profile v4)
+│   ├── fetch-instagram.go      # Instagram Graph API fetch script
 │   └── setup-business-profile.go  # One-time OAuth setup → prints CI secrets
 ├── static/
 │   ├── favicon.ico
@@ -206,13 +208,16 @@ The `instagram-gallery` shortcode automatically fetches Instagram posts and disp
 - `count` (default: `20`) — Number of posts to display
 
 **Features:**
-- Builds at **compile time** (fast static site, no runtime API calls)
+- Posts are fetched **weekly by GitHub Actions** (`.github/workflows/instagram.yml`) via the official Instagram Graph API and committed to the repo (`data/instagram.json` + `assets/instagram/`)
+- Hugo renders from those local files — **no API call at site-build time**, so the build never depends on Instagram being reachable
 - Automatic image optimization (resize to WebP format)
 - Client-side lightbox with keyboard navigation (arrow keys, Escape)
-- Lazy loading for performance
-- Responsive grid layout
+- Lazy loading, responsive grid layout
 
-**Note:** Uses Instagram's internal web API. Instagram may change or block access; consider alternatives if fetch fails frequently.
+**Setup:** Requires a Meta app connected to the Business account and two secrets,
+`IG_ACCESS_TOKEN` (long-lived token, auto-refreshed weekly) and `GH_PAT` (fine-grained
+PAT with Secrets: write, so the workflow can rotate the token). See the design spec
+`docs/superpowers/specs/2026-06-01-instagram-gallery-graph-api-design.md`.
 
 ---
 
