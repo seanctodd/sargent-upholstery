@@ -161,7 +161,8 @@ sargent-upholstery/
 │   └── static/
 │       └── js/main.js          # Lite YouTube facade + lightbox JS
 ├── .github/workflows/
-│   └── hugo.yml                # CI/CD pipeline
+│   ├── hugo.yml                # Weekly Google Reviews fetch
+│   └── instagram.yml           # Weekly Instagram gallery fetch
 ├── hugo.toml                   # Hugo configuration
 └── README.md
 ```
