@@ -8,9 +8,18 @@
 //	go run scripts/setup-business-profile.go /path/to/client_secret.json
 //
 // Prerequisites (do this once in Google Cloud Console):
-//  1. Enable the "My Business Account Management API" and "My Business Reviews API"
-//  2. Create an OAuth 2.0 credential → type "Desktop app"
-//  3. Download the JSON file Google provides
+//  1. Use the SAME project that was granted Business Profile API access
+//     (the access request and the OAuth client must live in one project, or
+//     every call gets quota 0).
+//  2. Enable, in that project: "My Business Account Management API",
+//     "My Business Business Information API", and "Google My Business API"
+//     (the legacy v4 API that serves reviews).
+//  3. Create an OAuth 2.0 credential → type "Desktop app".
+//  4. Download the JSON file Google provides.
+//
+// Note on hosts: account/location discovery uses the newer v1 APIs
+// (mybusinessaccountmanagement / mybusinessbusinessinformation); only the
+// reviews endpoint still lives on the legacy mybusiness.googleapis.com/v4 host.
 //
 // After running this script, add these GitHub Actions secrets:
 //
@@ -48,7 +57,7 @@ type oauthCredentials struct {
 
 const (
 	tokenURL    = "https://oauth2.googleapis.com/token"
-	accountsURL = "https://mybusiness.googleapis.com/v4/accounts"
+	accountsURL = "https://mybusinessaccountmanagement.googleapis.com/v1/accounts"
 	scope       = "https://www.googleapis.com/auth/business.manage"
 	redirectURI = "http://localhost:8080"
 )
@@ -192,7 +201,7 @@ func findLocation(accessToken string) (string, error) {
 
 	// Try each account's locations
 	for _, account := range accountsResp.Accounts {
-		locURL := fmt.Sprintf("https://mybusiness.googleapis.com/v4/%s/locations?readMask=name,title,storeCode,metadata", account.Name)
+		locURL := fmt.Sprintf("https://mybusinessbusinessinformation.googleapis.com/v1/%s/locations?readMask=name,title,storeCode,metadata&pageSize=100", account.Name)
 		locBody, err := apiGet(locURL, accessToken)
 		if err != nil {
 			continue
@@ -210,25 +219,29 @@ func findLocation(accessToken string) (string, error) {
 		if err := json.Unmarshal(locBody, &locsResp); err != nil {
 			continue
 		}
+		// v1 returns location names as "locations/{id}"; the reviews v4 endpoint
+		// needs the full "accounts/{id}/locations/{id}" parent, so join them.
 		for _, loc := range locsResp.Locations {
+			fullName := account.Name + "/" + loc.Name
 			if strings.Contains(strings.ToLower(loc.Title), "sargent") ||
 				strings.Contains(loc.Metadata.MapsURI, "ChIJvQmmCSS35YgR") ||
 				loc.Metadata.PlaceID == "ChIJvQmmCSS35YgR-3H9ajzGCHk" {
-				fmt.Printf("Found location: %s (%s)\n", loc.Title, loc.Name)
-				return loc.Name, nil
+				fmt.Printf("Found location: %s (%s)\n", loc.Title, fullName)
+				return fullName, nil
 			}
 		}
 		// If only one location, use it
 		if len(locsResp.Locations) == 1 {
 			loc := locsResp.Locations[0]
-			fmt.Printf("Using only location found: %s (%s)\n", loc.Title, loc.Name)
-			return loc.Name, nil
+			fullName := account.Name + "/" + loc.Name
+			fmt.Printf("Using only location found: %s (%s)\n", loc.Title, fullName)
+			return fullName, nil
 		}
 		// Print all locations for manual selection
 		if len(locsResp.Locations) > 0 {
 			fmt.Printf("Locations in account %s (%s):\n", account.AccountName, account.Name)
 			for _, loc := range locsResp.Locations {
-				fmt.Printf("  %s  →  %s\n", loc.Title, loc.Name)
+				fmt.Printf("  %s  →  %s\n", loc.Title, account.Name+"/"+loc.Name)
 			}
 		}
 	}
