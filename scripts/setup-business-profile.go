@@ -202,8 +202,8 @@ func findLocation(accessToken string) (string, error) {
 				Name     string `json:"name"`
 				Title    string `json:"title"`
 				Metadata struct {
-					MapsURI  string `json:"mapsUri"`
-					PlaceID  string `json:"placeId"`
+					MapsURI string `json:"mapsUri"`
+					PlaceID string `json:"placeId"`
 				} `json:"metadata"`
 			} `json:"locations"`
 		}
