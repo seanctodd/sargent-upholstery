@@ -155,11 +155,13 @@ func main() {
 	// 1. Refresh + persist token. Non-fatal: the current token is valid up to 60 days.
 	if newTok, err := refreshToken(token); err != nil {
 		fmt.Fprintf(os.Stderr, "Token refresh failed (continuing with current token): %v\n", err)
+		fmt.Printf("::warning::Instagram token refresh failed; it expires ~60 days after the last successful rotation: %v\n", err)
 	} else {
 		token = newTok
 		fmt.Println("Token refreshed")
 		if err := persistToken(newTok); err != nil {
 			fmt.Fprintf(os.Stderr, "Could not persist refreshed token (rotation skipped): %v\n", err)
+			fmt.Printf("::warning::Instagram token rotation skipped (IG_ACCESS_TOKEN secret NOT updated) — check the GH_PAT secret: %v\n", err)
 		} else {
 			fmt.Println("IG_ACCESS_TOKEN secret updated")
 		}
