@@ -29,7 +29,7 @@ No vendemos, intercambiamos ni alquilamos su información personal a terceros. S
 
 Nuestro sitio web utiliza los siguientes servicios de terceros que pueden recopilar datos de forma independiente:
 
-- **Google Fonts** — Las fuentes web se cargan desde los servidores de Google. Google puede registrar su dirección IP. Consulte la [Política de Privacidad de Google](https://policies.google.com/privacy).
+- **Google Analytics** — Usamos Google Analytics para entender el tráfico del sitio. Google puede usar cookies y registrar su dirección IP. Consulte la [Política de Privacidad de Google](https://policies.google.com/privacy).
 - **Google Maps** — Se utiliza un mapa integrado en nuestra página de Contacto. Google puede recopilar datos de uso. Consulte la [Política de Privacidad de Google](https://policies.google.com/privacy).
 - **ShopMonkey** — Nuestro formulario de solicitud de presupuesto es proporcionado por ShopMonkey a través de un iframe integrado. La información que envíe a través de ese formulario está sujeta a la [Política de Privacidad de ShopMonkey](https://www.shopmonkey.io/privacy-policy).
 

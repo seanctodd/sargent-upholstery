@@ -20,13 +20,11 @@ const (
 )
 
 type Review struct {
-	ID            string `json:"id"`
-	Author        string `json:"author"`
-	Rating        int    `json:"rating"`
-	Text          string `json:"text"`
-	Date          string `json:"date"`
-	RelativeTime  string `json:"relativeTime"`
-	GoogleMapsURI string `json:"googleMapsUri"`
+	ID     string `json:"id"`
+	Author string `json:"author"`
+	Rating int    `json:"rating"`
+	Text   string `json:"text"`
+	Date   string `json:"date"`
 }
 
 // ---- Business Profile API structures ----
@@ -115,17 +113,23 @@ func getAccessToken(clientID, clientSecret, refreshToken string) (string, error)
 		return "", err
 	}
 	defer resp.Body.Close()
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("token read error (HTTP %d): %w", resp.StatusCode, err)
+	}
 	var tok struct {
 		AccessToken string `json:"access_token"`
 		Error       string `json:"error"`
 		Description string `json:"error_description"`
 	}
 	if err := json.Unmarshal(body, &tok); err != nil {
-		return "", fmt.Errorf("token parse error: %w", err)
+		return "", fmt.Errorf("token parse error (HTTP %d): %w; body: %.300s", resp.StatusCode, err, body)
 	}
 	if tok.Error != "" {
-		return "", fmt.Errorf("token error: %s — %s", tok.Error, tok.Description)
+		return "", fmt.Errorf("token error (HTTP %d): %s — %s", resp.StatusCode, tok.Error, tok.Description)
+	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return "", fmt.Errorf("token endpoint HTTP %d: %.300s", resp.StatusCode, body)
 	}
 	return tok.AccessToken, nil
 }
@@ -138,7 +142,7 @@ func fetchBusinessProfileReviews(locationName, accessToken string) []Review {
 	for {
 		apiURL := fmt.Sprintf("https://mybusiness.googleapis.com/v4/%s/reviews?orderBy=update_time+desc&pageSize=50", locationName)
 		if pageToken != "" {
-			apiURL += "&pageToken=" + pageToken
+			apiURL += "&pageToken=" + url.QueryEscape(pageToken)
 		}
 
 		result := fetchURL(fmt.Sprintf("business-profile-p%d", page), apiURL, map[string]string{
@@ -146,6 +150,9 @@ func fetchBusinessProfileReviews(locationName, accessToken string) []Review {
 		})
 		if result.err != nil {
 			fmt.Fprintf(os.Stderr, "[business-profile-p%d] Fetch error: %v\n", page, result.err)
+			if page > 1 {
+				fmt.Printf("::warning::Reviews fetch stopped early at page %d (partial result): %v\n", page, result.err)
+			}
 			break
 		}
 		fmt.Printf("[business-profile-p%d] HTTP %d, %d bytes received\n", page, result.status, len(result.data))
@@ -153,6 +160,9 @@ func fetchBusinessProfileReviews(locationName, accessToken string) []Review {
 		var resp bpReviewsResponse
 		if err := json.Unmarshal(result.data, &resp); err != nil {
 			fmt.Fprintf(os.Stderr, "[business-profile-p%d] Parse error: %v\n", page, err)
+			if page > 1 {
+				fmt.Printf("::warning::Reviews fetch stopped early at page %d (parse error, partial result): %v\n", page, err)
+			}
 			break
 		}
 		fmt.Printf("[business-profile-p%d] Parsed %d reviews\n", page, len(resp.Reviews))

@@ -28,7 +28,7 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 - **Responsive design** showcasing upholstery services (automotive, fleet, marine, convertible tops, leather interiors, etc.)
 - **Fully bilingual** — complete English/Spanish support with hreflang tags and translated content
 - **Instagram integration shortcode** that fetches and displays recent Instagram posts with a client-side lightbox gallery
-- **Google Reviews integration** that fetches and displays customer reviews from Google Maps
+- **Google Reviews integration** that fetches and displays customer reviews via the Google Business Profile API
 - **Custom Hugo theme** (`sargent`) with optimized layouts and partials
 - **Performance-optimized** — scores 97/100 mobile, 100/100 desktop on Lighthouse
 
@@ -37,8 +37,10 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 - HTML5 / CSS3 / Vanilla JavaScript
 - Hugo asset pipeline (CSS minification + fingerprinting, image processing with WebP + srcset)
 - Instagram Graph API (official; weekly fetch committed to the repo, then build-time image processing)
-- Google Business Profile API v4 (build-time review fetching, via OAuth 2.0)
-- Cloudflare Pages hosting with GitHub Actions for scheduled review fetching
+- Google Business Profile API v4 (review fetching via OAuth 2.0)
+- Cloudflare R2 (hosts Instagram Reels videos, served from `media.sargentupholstery.com`)
+- Google Analytics (`gtag.js`) — the one third-party script on the site
+- Cloudflare Pages hosting with GitHub Actions for scheduled review & Instagram fetching
 - Zero database requirements
 
 ---
@@ -46,7 +48,7 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 ## Quick Start
 
 ### Prerequisites
-- **Hugo Extended** (0.141.0 or later) — required for image processing and `try` keyword
+- **Hugo Extended** (0.147.8 or later, matching the deployed `HUGO_VERSION`) — required for image processing and the asset pipeline
   - Download: https://gohugo.io/getting-started/installing/
 
 ### Build Locally
@@ -119,7 +121,8 @@ displayed on the homepage.
 sargent-upholstery/
 ├── assets/
 │   ├── css/style.css           # Main stylesheet (processed via Hugo pipes)
-│   └── images/old/             # History page photos (Hugo-processed to WebP)
+│   ├── images/old/             # History page photos (Hugo-processed to WebP)
+│   └── instagram/              # Instagram post posters (committed by CI)
 ├── content/                    # Markdown pages
 │   ├── _index.md               # Homepage
 │   ├── gallery.md              # Gallery with Instagram integration
@@ -140,11 +143,14 @@ sargent-upholstery/
 │   ├── fetch-reviews.go        # Google Reviews fetch script (Business Profile v4)
 │   ├── fetch-instagram.go      # Instagram Graph API fetch script
 │   └── setup-business-profile.go  # One-time OAuth setup → prints CI secrets
+├── reels/                      # Instagram Reels MP4 staging (gitignored; synced to R2)
+├── docs/superpowers/           # Design specs & implementation plans
 ├── static/
 │   ├── favicon.ico
 │   ├── fonts/                  # Self-hosted Work Sans woff2
 │   ├── _headers                # Cloudflare Pages security + caching headers
 │   ├── _redirects              # www → apex domain redirect
+│   ├── robots.txt              # Crawl directives
 │   └── images/
 │       ├── heroes/             # Hero images (WebP with 640w/1024w/1920w variants)
 │       ├── logo.svg
@@ -159,7 +165,7 @@ sargent-upholstery/
 │   │       ├── img.html               # Responsive image shortcode (WebP + srcset)
 │   │       └── instagram-gallery.html
 │   └── static/
-│       └── js/main.js          # Lite YouTube facade + lightbox JS
+│       └── js/main.js          # Lite YouTube facade (gallery lightbox JS is inline in the shortcode)
 ├── .github/workflows/
 │   ├── hugo.yml                # Weekly Google Reviews fetch
 │   └── instagram.yml           # Weekly Instagram gallery fetch
@@ -193,6 +199,8 @@ Key optimizations:
 - **`fetchpriority="high"`** — on hero images for faster LCP discovery
 - **Cloudflare Pages caching** — immutable cache headers for static assets, no-cache for HTML
 
+> **Note:** Google Analytics (`gtag.js`) is the single third-party script loaded site-wide. Everything else (fonts, lightbox, the YouTube facade, Reels video) is first-party or loads no JS until interaction.
+
 ---
 
 ## Instagram Gallery Shortcode
@@ -205,8 +213,8 @@ The `instagram-gallery` shortcode automatically fetches Instagram posts and disp
 ```
 
 **Parameters:**
-- `username` (default: `sargentupholsteryco`) — Instagram username to fetch posts from
 - `count` (default: `20`) — Number of posts to display
+- `username` (default: `sargentupholsteryco`) — used only for image alt-text fallback and the fallback profile link; the posts come from the account tied to `IG_ACCESS_TOKEN`, not this value
 
 **Features:**
 - Posts are fetched **weekly by GitHub Actions** (`.github/workflows/instagram.yml`) via the official Instagram Graph API and committed to the repo (`data/instagram.json` + `assets/instagram/`)
@@ -215,10 +223,20 @@ The `instagram-gallery` shortcode automatically fetches Instagram posts and disp
 - Client-side lightbox with keyboard navigation (arrow keys, Escape)
 - Lazy loading, responsive grid layout
 
-**Setup:** Requires a Meta app connected to the Business account and two secrets,
-`IG_ACCESS_TOKEN` (long-lived token, auto-refreshed weekly) and `GH_PAT` (fine-grained
-PAT with Secrets: write, so the workflow can rotate the token). See the design spec
-`docs/superpowers/specs/2026-06-01-instagram-gallery-graph-api-design.md`.
+**Video (Reels):** Video posts also have their MP4 downloaded into `reels/` (gitignored)
+and uploaded to a **Cloudflare R2** bucket (`sargent-media`) via `aws s3 sync` in the
+workflow. They're served from `https://media.sargentupholstery.com/reels/` and played in
+the lightbox with a native `<video>` element (no third-party player). The committed grid
+only ever holds static poster images, so videos never enter git.
+
+**Setup:** Requires a Meta app connected to the Business account plus these GitHub Actions
+secrets:
+- `IG_ACCESS_TOKEN` — long-lived Instagram token (auto-refreshed weekly by the workflow)
+- `GH_PAT` — fine-grained PAT with **Secrets: write**, so the workflow can rotate `IG_ACCESS_TOKEN`
+- `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` — Cloudflare R2 S3-API token (Reels upload)
+- `R2_ACCOUNT_ID` — Cloudflare account ID, used in the R2 S3 endpoint URL
+
+See the design specs in `docs/superpowers/specs/` (Graph API gallery + R2 video).
 
 ---
 
@@ -250,7 +268,7 @@ Changes auto-reload in dev server.
 
 ## Dependencies
 
-- **Hugo Extended** 0.141.0+ (for image processing, asset pipeline, and `try` keyword)
+- **Hugo Extended** 0.147.8+ (for image processing and the asset pipeline)
 - No npm, no Node.js, no database required
 
 ---

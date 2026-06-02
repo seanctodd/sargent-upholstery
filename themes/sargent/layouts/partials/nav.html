@@ -4,7 +4,7 @@
       <img src="{{ "images/non-oval-logo-white.svg" | relURL }}" alt="{{ .Site.Title }}" width="261" height="110">
     </a>
     <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">
-    <label for="nav-toggle" class="nav-toggle" role="button" aria-label="{{ i18n "nav_toggle" }}" aria-expanded="false">
+    <label for="nav-toggle" class="nav-toggle" aria-label="{{ i18n "nav_toggle" }}">
       <span class="hamburger"></span>
     </label>
     <nav class="site-nav" id="site-nav" aria-label="{{ i18n "nav_main" }}">
@@ -14,9 +14,9 @@
           {{- if .HasChildren }}
           <input type="checkbox" id="dropdown-{{ .Name | urlize }}" class="dropdown-checkbox" aria-label="{{ i18n "nav_submenu_toggle" (dict "Name" .Name) }}">
           <label for="dropdown-{{ .Name | urlize }}" class="dropdown-label">{{ .Name }}</label>
-          <ul class="dropdown" role="menu">
+          <ul class="dropdown">
             {{- range .Children }}
-            <li role="none"><a href="{{ .URL }}" role="menuitem">{{ .Name }}</a></li>
+            <li><a href="{{ .URL }}">{{ .Name }}</a></li>
             {{- end }}
           </ul>
           {{- else }}

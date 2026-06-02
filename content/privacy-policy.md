@@ -29,7 +29,7 @@ We do not sell, trade, or rent your personal information to third parties. We ma
 
 Our website uses the following third-party services that may collect data independently:
 
-- **Google Fonts** — Web fonts are loaded from Google's servers. Google may log your IP address. See [Google's Privacy Policy](https://policies.google.com/privacy).
+- **Google Analytics** — We use Google Analytics to understand site traffic. Google may set cookies and log your IP address. See [Google's Privacy Policy](https://policies.google.com/privacy).
 - **Google Maps** — An embedded map is used on our Contact page. Google may collect usage data. See [Google's Privacy Policy](https://policies.google.com/privacy).
 - **ShopMonkey** — Our estimate request form is provided by ShopMonkey via an embedded iframe. Information you submit through that form is subject to [ShopMonkey's Privacy Policy](https://www.shopmonkey.io/privacy-policy).
 
