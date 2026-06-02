@@ -3,7 +3,7 @@
     function activate() {
       var iframe = document.createElement('iframe');
       iframe.src = 'https://www.youtube.com/embed/' + el.dataset.videoid + '?autoplay=1';
-      iframe.title = el.getAttribute('aria-label').replace('Play: ', '');
+      iframe.title = el.getAttribute('aria-label').replace(/^[^:]*:\s*/, '');
       iframe.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
       iframe.setAttribute('allowfullscreen', '');
       iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none';

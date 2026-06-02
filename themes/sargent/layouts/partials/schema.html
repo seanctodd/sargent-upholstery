@@ -22,9 +22,6 @@
     "longitude": -81.65694
   },
   "openingHours": "Mo-Fr 08:00-16:30",
-  "sameAs": [
-    {{- with .Site.Params.facebook }}"{{ . }}"{{ end }}
-    {{- with .Site.Params.instagram }}, "{{ . }}"{{ end }}
-  ]
+  "sameAs": {{ $social := slice }}{{ with .Site.Params.facebook }}{{ $social = $social | append . }}{{ end }}{{ with .Site.Params.instagram }}{{ $social = $social | append . }}{{ end }}{{ $social | jsonify }}
 }
 </script>

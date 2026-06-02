@@ -57,7 +57,8 @@ a:hover {
 a:focus-visible,
 .btn:focus-visible,
 .nav-toggle:focus-visible,
-.dropdown-label:focus-visible {
+.dropdown-label:focus-visible,
+.ig-gallery-item:focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 2px;
 }
@@ -613,6 +614,14 @@ p {
   overflow: hidden;
   border-radius: 4px;
   background: var(--light-gray);
+  padding: 0;
+  border: 0;
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .ig-gallery-item img {
@@ -733,6 +742,14 @@ p {
 .ig-lightbox-close:hover,
 .ig-lightbox-prev:hover,
 .ig-lightbox-next:hover {
+  opacity: 1;
+}
+
+.ig-lightbox-close:focus-visible,
+.ig-lightbox-prev:focus-visible,
+.ig-lightbox-next:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
   opacity: 1;
 }
 
@@ -1091,5 +1108,21 @@ p {
 
   .container {
     padding: 0 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .ig-gallery-item:hover img {
+    transform: none;
   }
 }

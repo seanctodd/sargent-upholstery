@@ -9,10 +9,11 @@
       {{- $thumb := $img.Resize "640x640 webp q85" -}}
       {{- $large := $img.Resize "1200x webp q90" -}}
       {{- $caption := $p.caption -}}
-  <div class="ig-gallery-item{{ with $p.video }} is-video{{ end }}" data-index="{{ $i }}" data-large="{{ $large.RelPermalink }}" data-caption="{{ $caption | htmlEscape }}" data-link="{{ $p.permalink }}"{{ with $p.video }} data-video="{{ . }}"{{ end }}>
-    <img src="{{ $thumb.RelPermalink }}" alt="{{ with $caption }}{{ . }}{{ else }}{{ i18n "ig_alt_fallback" }} @{{ $username }}{{ end }}" loading="lazy" width="640" height="640">
+      {{- $alt := $caption | replaceRE "#\\S+" "" | replaceRE "\\s+" " " | strings.TrimSpace | truncate 120 -}}
+  <button type="button" class="ig-gallery-item{{ with $p.video }} is-video{{ end }}" data-index="{{ $i }}" data-large="{{ $large.RelPermalink }}" data-caption="{{ $caption }}" data-link="{{ $p.permalink }}"{{ with $p.video }} data-video="{{ . }}"{{ end }}>
+    <img src="{{ $thumb.RelPermalink }}" alt="{{ with $alt }}{{ . }}{{ else }}{{ i18n "ig_alt_fallback" }} @{{ $username }}{{ end }}" loading="lazy" width="640" height="640">
     {{- with $p.video }}<span class="ig-play-badge" aria-hidden="true"></span>{{ end }}
-  </div>
+  </button>
     {{- end }}
   {{- end }}
 {{- else }}
