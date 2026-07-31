@@ -33,5 +33,10 @@
 /*.woff
   Cache-Control: public, max-age=31536000, immutable
 
-/*.html
-  Cache-Control: public, no-cache
+# No rule for HTML on purpose. These globs match the REQUEST PATH, and Hugo
+# serves clean URLs (/gallery/, not /gallery/index.html), so a `/*.html` rule
+# only ever matches a literal .html request and never real traffic. Cloudflare
+# Pages already serves HTML as `public, max-age=0, must-revalidate`, which is
+# the revalidate-every-time behaviour we want. Do not re-add `/*.html`; to
+# change HTML caching you would have to set Cache-Control on the `/*` block,
+# which would also apply to the immutable asset rules above.

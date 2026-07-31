@@ -115,7 +115,7 @@ npm install --no-save jsdom && node tests/lite-youtube.test.js
 gofmt -l . && go vet ./... && go test ./...
 ```
 
-A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetch fresh Google Reviews:
+A **GitHub Actions** workflow (`.github/workflows/reviews.yml`) runs weekly to fetch fresh Google Reviews:
 1. Fetches reviews via `scripts/fetch-reviews` (requires the four `GOOGLE_*` OAuth secrets)
 2. Commits updated `data/reviews.json` back to the repo
 3. The commit triggers a Cloudflare Pages rebuild automatically
@@ -237,7 +237,7 @@ sargent-upholstery/
 │   └── lite-youtube.test.js    # Behaviour tests for the YouTube facade (jsdom)
 ├── .github/workflows/
 │   ├── ci.yml                  # Build + tests on every push / PR
-│   ├── hugo.yml                # Weekly Google Reviews fetch
+│   ├── reviews.yml             # Weekly Google Reviews fetch
 │   └── instagram.yml           # Weekly Instagram gallery fetch
 ├── .hugo-version               # Pinned Hugo version (mirror into Cloudflare)
 ├── hugo.toml                   # Hugo configuration

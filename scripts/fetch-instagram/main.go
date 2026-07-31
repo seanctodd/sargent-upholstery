@@ -185,8 +185,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	// reels/ holds the MP4s this run; recreate it fresh so it mirrors the current
-	// feed exactly (makes the CI `aws s3 sync --delete` correct). It is .gitignored.
+	// reels/ holds the MP4s downloaded this run; recreate it fresh so a stale
+	// file from a previous run is never re-uploaded. CI syncs it to R2 without
+	// --delete, so reels that age out of the feed stay in the bucket rather than
+	// disappearing before the site redeploys. It is .gitignored.
 	reelsDir := "reels"
 	if err := os.RemoveAll(reelsDir); err != nil {
 		fmt.Fprintf(os.Stderr, "could not clear %s: %v\n", reelsDir, err)

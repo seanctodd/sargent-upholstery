@@ -37,11 +37,16 @@ jobs:
             echo "No reels/ directory (fetch skipped); nothing to upload."
             exit 0
           fi
+          # No --delete on purpose. This step runs before the commit, and the
+          # Cloudflare Pages rebuild only starts after it -- so deleting reels
+          # that aged out of the top 20 would 404 them on the live site for the
+          # minutes in between. Orphans are cheap (a few MB each, well inside
+          # the R2 free tier) and nothing links to them once the gallery data
+          # no longer references them.
           aws s3 sync reels "s3://sargent-media/reels/" \
             --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com" \
             --content-type video/mp4 \
-            --cache-control "public, max-age=604800, immutable" \
-            --delete
+            --cache-control "public, max-age=604800, immutable"
       - name: Commit updated gallery
         run: |
           git config user.name "github-actions[bot]"

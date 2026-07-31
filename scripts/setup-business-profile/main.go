@@ -1,6 +1,5 @@
-// setup-business-profile.go
-//
-// One-time setup tool to authorize the Google Business Profile API
+// Command setup-business-profile is a one-time tool to authorize the Google
+// Business Profile API
 // and retrieve your location name + refresh token for use in CI.
 //
 // Usage:
@@ -42,6 +41,7 @@ import (
 	"os/exec"
 	"runtime"
 	"strings"
+	"time"
 )
 
 // Google's downloaded credentials JSON format
@@ -55,11 +55,18 @@ type oauthCredentials struct {
 	ClientSecret string `json:"client_secret"`
 }
 
+// httpClient mirrors the timeout used by the fetch scripts; the bare
+// http.DefaultClient has none and can hang indefinitely.
+var httpClient = &http.Client{Timeout: 30 * time.Second}
+
 const (
 	tokenURL    = "https://oauth2.googleapis.com/token"
 	accountsURL = "https://mybusinessaccountmanagement.googleapis.com/v1/accounts"
 	scope       = "https://www.googleapis.com/auth/business.manage"
-	redirectURI = "http://localhost:8080"
+	// 127.0.0.1 rather than "localhost": the listener binds to 127.0.0.1 only,
+	// and "localhost" can resolve to ::1 first, which would be refused. Google
+	// accepts either form for Desktop-app OAuth clients without registration.
+	redirectURI = "http://127.0.0.1:8080"
 )
 
 func main() {
@@ -100,10 +107,12 @@ func main() {
 		"prompt":        {"consent"},
 	}.Encode()
 
-	// Start local server to capture the redirect
+	// Start a local server to capture the redirect. Bind to loopback only: the
+	// OAuth authorization code arrives in this request's query string, and
+	// listening on every interface would expose it to the local network.
 	codeCh := make(chan string, 1)
-	srv := &http.Server{Addr: ":8080"}
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		code := r.URL.Query().Get("code")
 		if code == "" {
 			fmt.Fprintln(w, "No authorization code received.")
@@ -112,8 +121,9 @@ func main() {
 		fmt.Fprintln(w, "Authorization successful! You can close this tab.")
 		codeCh <- code
 	})
+	srv := &http.Server{Handler: mux}
 
-	listener, err := net.Listen("tcp", ":8080")
+	listener, err := net.Listen("tcp", "127.0.0.1:8080")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error starting local server: %v\n", err)
 		os.Exit(1)
@@ -132,7 +142,7 @@ func main() {
 	srv.Shutdown(context.Background())
 
 	// Exchange code for tokens
-	resp, err := http.PostForm(tokenURL, url.Values{
+	resp, err := httpClient.PostForm(tokenURL, url.Values{
 		"code":          {code},
 		"client_id":     {clientID},
 		"client_secret": {clientSecret},
@@ -251,7 +261,7 @@ func findLocation(accessToken string) (string, error) {
 func apiGet(url, accessToken string) ([]byte, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set("Authorization", "Bearer "+accessToken)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
