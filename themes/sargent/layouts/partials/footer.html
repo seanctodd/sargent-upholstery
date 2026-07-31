@@ -9,8 +9,9 @@
       </p>
     </div>
     <div class="footer-col footer-col-logo">
-      {{- with .Site.Params.logo }}
-      <img src="{{ . | relURL }}" alt="{{ $.Site.Title }}" class="footer-logo" width="223" height="150">
+      {{- with resources.Get .Site.Params.logo }}
+      {{- $logo := . | fingerprint }}
+      <img src="{{ $logo.RelPermalink }}" alt="{{ $.Site.Title }}" class="footer-logo" width="223" height="150">
       {{- else }}
       <p class="footer-heading">{{ $.Site.Title }}</p>
       <p>{{ $.Site.Params.tagline }}</p>
@@ -36,4 +37,8 @@
     <p>&copy; {{ now.Year }} {{ .Site.Title }} {{ i18n "footer_rights" }} | <a href="{{ "privacy-policy/" | relURL }}">{{ i18n "footer_privacy" }}</a></p>
   </div>
 </footer>
-<script src="{{ "js/main.js" | relURL }}" defer></script>
+{{/* Fingerprinted so the URL changes with the content. Served from static/ at a
+     fixed path it was cached `immutable` for a year, which pinned stale JS in
+     browsers even across reloads. See static/_headers. */}}
+{{ $js := resources.Get "js/main.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>

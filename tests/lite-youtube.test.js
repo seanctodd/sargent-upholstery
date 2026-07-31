@@ -1,5 +1,5 @@
 // Behavioural tests for the lite-YouTube facade in
-// themes/sargent/static/js/main.js -- the only hand-written JS that ships
+// themes/sargent/assets/js/main.js -- the only hand-written JS that ships
 // site-wide (the gallery lightbox script is inline in its shortcode).
 //
 // Run:  npm install --no-save jsdom && node tests/lite-youtube.test.js
@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-const DEFAULT_SRC = path.join(__dirname, '..', 'themes', 'sargent', 'static', 'js', 'main.js');
+const DEFAULT_SRC = path.join(__dirname, '..', 'themes', 'sargent', 'assets', 'js', 'main.js');
 const SRC = process.argv[2] || DEFAULT_SRC;
 const code = fs.readFileSync(SRC, 'utf8');
 

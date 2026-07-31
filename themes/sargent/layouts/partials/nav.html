@@ -1,7 +1,8 @@
 <header class="site-header">
   <div class="container header-inner">
     <a href="{{ "" | relURL }}" class="logo">
-      <img src="{{ "images/non-oval-logo-white.svg" | relURL }}" alt="{{ .Site.Title }}" width="261" height="110">
+      {{- $navLogo := resources.Get "images/non-oval-logo-white.svg" | fingerprint -}}
+      <img src="{{ $navLogo.RelPermalink }}" alt="{{ .Site.Title }}" width="261" height="110">
     </a>
     <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">
     <label for="nav-toggle" class="nav-toggle" aria-label="{{ i18n "nav_toggle" }}">

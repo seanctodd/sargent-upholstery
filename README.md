@@ -89,6 +89,17 @@ The site is hosted on **Cloudflare Pages**, which builds and deploys automatical
 >
 > If `HUGO_VERSION` is unset, Cloudflare falls back to the build image default (v3 → `0.147.7`), which predates the `minify.tdewolff.css.version` key in `hugo.toml` and would silently change the minified CSS.
 
+### Asset caching
+
+`static/_headers` splits assets into two groups, and the split matters:
+
+- **Fingerprinted** (`/css/*`, `/js/*`, `/instagram/*`) — Hugo puts a content hash in the filename, so the URL changes whenever the bytes do. Cached `immutable` for a year.
+- **Copied verbatim from `static/`** (`/images/*`, `/fonts/*`) — fixed URLs, so the filename does *not* change with the content. One week, **without** `immutable`.
+
+> ⚠️ Never mark a non-fingerprinted asset `immutable`. It tells browsers not to revalidate *even on an explicit reload*, so a bad file stays pinned for the full TTL with no way to push a fix. This is not hypothetical: `logo.svg` and `js/main.js` were served that way, and corrected versions of both were invisible to anyone who had already loaded the site. **If an asset needs to be updatable, put it in `themes/sargent/assets/` and pipe it through `fingerprint`** rather than shortening its TTL.
+
+> ⚠️ Cloudflare Pages **merges every matching rule** and joins duplicate headers with a comma, so two rules matching one file emit a malformed `Cache-Control`. Each path must match exactly one `Cache-Control` rule — CI asserts this.
+
 **Domain redirect (`www` → apex):** handled by a zone-level **Redirect Rule** (Cloudflare dashboard → **Rules → Redirect Rules**), a `301` matching hostname `www.sargentupholstery.com` and preserving path + query string.
 
 > There is deliberately **no `static/_redirects` file**. Cloudflare Pages `_redirects` can only match *relative paths* — it cannot match hostnames, so it cannot express a `www` → apex redirect. A file attempting this shipped from the GitHub Pages migration until 2026-07-31; every line was rejected (`Parsed 0 valid redirect rules` in the build log) and `www` returned HTTP 522 the whole time. Do not re-add it — use a Redirect Rule.
@@ -220,8 +231,7 @@ sargent-upholstery/
 │   ├── robots.txt              # Crawl directives
 │   └── images/
 │       ├── heroes/             # Hero images (WebP with 640w/1024w/1920w variants)
-│       ├── logo.svg
-│       └── non-oval-logo-white.svg
+│       └── non-oval-logo-color.png
 ├── themes/sargent/             # Custom Hugo theme
 │   ├── layouts/
 │   │   ├── index.html          # Homepage layout
@@ -231,8 +241,9 @@ sargent-upholstery/
 │   │   └── shortcodes/         # Custom shortcodes
 │   │       ├── img.html               # Responsive image shortcode (WebP + srcset)
 │   │       └── instagram-gallery.html
-│   └── static/
-│       └── js/main.js          # Lite YouTube facade (gallery lightbox JS is inline in the shortcode)
+│   └── assets/                 # Piped through Hugo and fingerprinted
+│       ├── js/main.js          # Lite YouTube facade (gallery lightbox JS is inline in the shortcode)
+│       └── images/             # logo.svg (footer + favicon), non-oval-logo-white.svg (nav)
 ├── tests/
 │   └── lite-youtube.test.js    # Behaviour tests for the YouTube facade (jsdom)
 ├── .github/workflows/

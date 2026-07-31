@@ -77,6 +77,36 @@ jobs:
           fi
           exit $fail
 
+      # Cloudflare Pages merges every matching _headers rule and joins duplicate
+      # headers with a comma, so two rules matching one file would emit a
+      # malformed Cache-Control. Assert each output path matches at most one.
+      - name: Check _headers rules do not overlap
+        run: |
+          python3 - <<'PY'
+          import fnmatch, os, sys
+          rules, cur = [], None
+          for line in open('public/_headers'):
+              s = line.rstrip('\n')
+              if not s.strip() or s.lstrip().startswith('#'):
+                  continue
+              if not s[:1].isspace():
+                  cur = s.strip()
+              elif cur and s.strip().lower().startswith('cache-control'):
+                  rules.append(cur)
+          bad = []
+          for root, _, files in os.walk('public'):
+              for fn in files:
+                  p = '/' + os.path.relpath(os.path.join(root, fn), 'public').replace(os.sep, '/')
+                  m = [r for r in rules if fnmatch.fnmatch(p, r)]
+                  if len(m) > 1:
+                      bad.append((p, m))
+          if bad:
+              for p, m in bad[:20]:
+                  print(f"::error::{p} matches multiple Cache-Control rules: {m}")
+              sys.exit(1)
+          print(f"{len(rules)} Cache-Control rules, no overlaps")
+          PY
+
   test-js:
     name: JS behaviour tests
     runs-on: ubuntu-latest

@@ -36,7 +36,8 @@
 
 {{/* Favicon */}}
 <link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="any">
-<link rel="icon" href="{{ "images/logo.svg" | relURL }}" type="image/svg+xml">
+{{- $svgIcon := resources.Get "images/logo.svg" | fingerprint -}}
+<link rel="icon" href="{{ $svgIcon.RelPermalink }}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{ "favicon.ico" | relURL }}">
 
 {{- with .Params.heroImage -}}
