@@ -31,6 +31,7 @@ Nuestro sitio web utiliza los siguientes servicios de terceros que pueden recopi
 
 - **Google Analytics** — Usamos Google Analytics para entender el tráfico del sitio. Google puede usar cookies y registrar su dirección IP. Consulte la [Política de Privacidad de Google](https://policies.google.com/privacy).
 - **Google Maps** — Se utiliza un mapa integrado en nuestra página de Contacto. Google puede recopilar datos de uso. Consulte la [Política de Privacidad de Google](https://policies.google.com/privacy).
+- **YouTube** — Nuestra página de inicio muestra una imagen de vista previa de un video de YouTube. No se carga nada desde YouTube hasta que usted haga clic para reproducirlo; en ese momento, YouTube puede instalar cookies y recopilar datos de visualización. Consulte la [Política de Privacidad de Google](https://policies.google.com/privacy).
 - **ShopMonkey** — Nuestro formulario de solicitud de presupuesto es proporcionado por ShopMonkey a través de un iframe integrado. La información que envíe a través de ese formulario está sujeta a la [Política de Privacidad de ShopMonkey](https://www.shopmonkey.io/privacy-policy).
 
 ## Contáctenos

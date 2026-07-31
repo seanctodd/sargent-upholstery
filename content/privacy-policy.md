@@ -31,6 +31,7 @@ Our website uses the following third-party services that may collect data indepe
 
 - **Google Analytics** — We use Google Analytics to understand site traffic. Google may set cookies and log your IP address. See [Google's Privacy Policy](https://policies.google.com/privacy).
 - **Google Maps** — An embedded map is used on our Contact page. Google may collect usage data. See [Google's Privacy Policy](https://policies.google.com/privacy).
+- **YouTube** — Our home page shows a preview image of a YouTube video. Nothing is loaded from YouTube until you click to play; at that point YouTube may set cookies and collect viewing data. See [Google's Privacy Policy](https://policies.google.com/privacy).
 - **ShopMonkey** — Our estimate request form is provided by ShopMonkey via an embedded iframe. Information you submit through that form is subject to [ShopMonkey's Privacy Policy](https://www.shopmonkey.io/privacy-policy).
 
 ## Contact Us

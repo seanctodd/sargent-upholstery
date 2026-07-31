@@ -3,6 +3,10 @@ title = 'Sargent Upholstery Co.'
 theme = 'sargent'
 disableHugoGeneratorInject = true
 
+# No content uses categories or tags, but Hugo still generates (and sitemaps)
+# empty /categories/ and /tags/ list pages in both languages.
+disableKinds = ["taxonomy", "term"]
+
 [caches]
   [caches.getresource]
     maxAge = "0s"
