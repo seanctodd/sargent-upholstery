@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Hugo build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Resolve pinned Hugo version
+        id: hugo
+        run: |
+          version="$(tr -d '[:space:]' < .hugo-version)"
+          if [ -z "$version" ]; then
+            echo "::error::.hugo-version is empty"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Pinned Hugo version: $version"
+
+      # Install the same official extended binary Cloudflare Pages downloads for
+      # HUGO_VERSION, so CI reproduces the deploy toolchain exactly.
+      - name: Install Hugo Extended
+        env:
+          HUGO_VER: ${{ steps.hugo.outputs.version }}
+        run: |
+          url="https://github.com/gohugoio/hugo/releases/download/v${HUGO_VER}/hugo_extended_${HUGO_VER}_linux-amd64.tar.gz"
+          curl -sSfL "$url" -o /tmp/hugo.tar.gz
+          tar -xzf /tmp/hugo.tar.gz -C /tmp hugo
+          sudo install /tmp/hugo /usr/local/bin/hugo
+          hugo version
+
+      # Treat any WARN as a failure. Note --panicOnWarning does NOT cover config
+      # deprecations (verified: it logs them and still exits 0), so grep the log
+      # instead. This is the guard that catches deprecated config keys such as
+      # the minify.tdewolff.css.keepCSS2 one that went unnoticed for months.
+      - name: Build (warnings are errors)
+        run: |
+          set -o pipefail
+          hugo --gc --printPathWarnings 2>&1 | tee /tmp/build.log
+          if grep -qE '^WARN' /tmp/build.log; then
+            echo "::error::Hugo emitted warnings:"
+            grep -E '^WARN' /tmp/build.log
+            exit 1
+          fi
+
+      - name: Sanity-check output
+        run: |
+          fail=0
+          for f in public/index.html public/es/index.html public/gallery/index.html \
+                   public/sitemap.xml public/_headers; do
+            if [ ! -s "$f" ]; then
+              echo "::error::expected build artefact missing or empty: $f"
+              fail=1
+            fi
+          done
+          # No content uses taxonomies; these are disabled in hugo.toml and must
+          # not reappear in the sitemap as empty pages.
+          if grep -qE '<loc>[^<]*/(categories|tags)/</loc>' public/en/sitemap.xml public/es/sitemap.xml; then
+            echo "::error::empty taxonomy pages are back in the sitemap"
+            fail=1
+          fi
+          exit $fail
+
+  test-js:
+    name: JS behaviour tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # --no-save keeps the repo free of package.json / package-lock.json; the
+      # site itself has no npm dependencies and should stay that way.
+      - name: Install jsdom
+        run: npm install --no-save jsdom --no-fund --no-audit --loglevel=error
+
+      - name: Run tests
+        run: node tests/lite-youtube.test.js
+
+  go:
+    name: Go scripts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: gofmt
+        run: |
+          unformatted="$(gofmt -l scripts/)"
+          if [ -n "$unformatted" ]; then
+            echo "::error::gofmt needed for: $unformatted"
+            exit 1
+          fi
+
+      # Each script is its own `package main` in one directory, so they must be
+      # vetted (and built) one file at a time rather than as a package.
+      - name: go vet
+        run: |
+          fail=0
+          for f in scripts/*.go; do
+            echo "vet $f"
+            go vet "$f" || fail=1
+          done
+          exit $fail
+
+      - name: go build
+        run: |
+          fail=0
+          for f in scripts/*.go; do
+            go build -o /dev/null "$f" || fail=1
+          done
+          exit $fail

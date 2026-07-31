@@ -93,6 +93,28 @@ The site is hosted on **Cloudflare Pages**, which builds and deploys automatical
 
 > There is deliberately **no `static/_redirects` file**. Cloudflare Pages `_redirects` can only match *relative paths* — it cannot match hostnames, so it cannot express a `www` → apex redirect. A file attempting this shipped from the GitHub Pages migration until 2026-07-31; every line was rejected (`Parsed 0 valid redirect rules` in the build log) and `www` returned HTTP 522 the whole time. Do not re-add it — use a Redirect Rule.
 
+## Continuous Integration
+
+`.github/workflows/ci.yml` runs on every push and pull request to `main`:
+
+| Job | What it checks |
+|---|---|
+| **Hugo build** | Installs the exact binary from `.hugo-version` (same release Cloudflare downloads), builds, and **fails on any `WARN`** — this is what catches deprecated config keys. Then asserts key artefacts exist and that empty taxonomy pages have not returned to the sitemap. |
+| **JS behaviour tests** | `node tests/lite-youtube.test.js` under jsdom — 14 assertions covering the YouTube facade's keyboard handling, re-activation guard, and label fallbacks. |
+| **Go scripts** | `gofmt`, `go vet`, and `go build` on each script (each is its own `package main`, so they are checked one file at a time). |
+
+> `--panicOnWarning` is deliberately **not** used: it does not fail on config deprecations (it logs them and exits `0`). The build log is grepped for `^WARN` instead.
+>
+> jsdom is installed with `npm install --no-save`, so no `package.json` or lockfile enters the repo — a plain `hugo` build remains the only requirement to work on the site.
+
+Run the same checks locally:
+
+```bash
+hugo --gc --printPathWarnings          # must print no WARN lines
+npm install --no-save jsdom && node tests/lite-youtube.test.js
+gofmt -l scripts/ && for f in scripts/*.go; do go vet "$f"; done
+```
+
 A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetch fresh Google Reviews:
 1. Fetches reviews via `scripts/fetch-reviews.go` (requires the four `GOOGLE_*` OAuth secrets)
 2. Commits updated `data/reviews.json` back to the repo
@@ -174,9 +196,13 @@ sargent-upholstery/
 │   │       └── instagram-gallery.html
 │   └── static/
 │       └── js/main.js          # Lite YouTube facade (gallery lightbox JS is inline in the shortcode)
+├── tests/
+│   └── lite-youtube.test.js    # Behaviour tests for the YouTube facade (jsdom)
 ├── .github/workflows/
+│   ├── ci.yml                  # Build + tests on every push / PR
 │   ├── hugo.yml                # Weekly Google Reviews fetch
 │   └── instagram.yml           # Weekly Instagram gallery fetch
+├── .hugo-version               # Pinned Hugo version (mirror into Cloudflare)
 ├── hugo.toml                   # Hugo configuration
 └── README.md
 ```
