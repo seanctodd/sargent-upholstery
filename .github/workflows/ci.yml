@@ -134,10 +134,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      # go.mod is the single source of truth for the toolchain, the same way
+      # .hugo-version is for Hugo.
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: 'stable'
+          go-version-file: go.mod
 
       - name: gofmt
         run: |
