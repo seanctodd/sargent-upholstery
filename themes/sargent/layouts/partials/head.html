@@ -41,8 +41,15 @@
 <link rel="apple-touch-icon" href="{{ "favicon.ico" | relURL }}">
 
 {{- with .Params.heroImage -}}
-{{- $base := replace . ".webp" "" -}}
-<link rel="preload" as="image" imagesrcset="{{ (printf "%s-640w.webp" $base) | relURL }} 640w, {{ (printf "%s-1024w.webp" $base) | relURL }} 1024w, {{ . | relURL }} 1920w" imagesizes="100vw">
+{{/* imagesrcset is a plain URL-context attribute, so Go rejects building it
+     from a range ("ambiguous context within a URL"). Join it first and hand
+     over the finished attribute. <img srcset> has its own content type and
+     does not need this. */}}
+{{- $imgsrcset := "" -}}
+{{- range $i, $s := partial "hero-srcset.html" . -}}
+  {{- $imgsrcset = printf "%s%s%s %dw" $imgsrcset (cond (eq $i 0) "" ", ") $s.url $s.w -}}
+{{- end }}
+<link rel="preload" as="image" {{ printf "imagesrcset=%q" $imgsrcset | safeHTMLAttr }} imagesizes="100vw">
 {{- end }}
 <link rel="preload" href="/fonts/work-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 {{- if in .RelPermalink "gallery" }}

@@ -1,0 +1,26 @@
+{{- /*
+  Returns the hero image's responsive sources as a slice of {url, w} dicts.
+  Takes the heroImage path from front matter (e.g. "images/heroes/home.webp")
+  and derives the pre-generated width variants sitting beside it.
+
+  Single source of truth: index/single/list need this for the <img> and
+  head.html needs it for the preload, and those four had drifted into copies of
+  the same printf chain.
+
+  It returns data rather than a finished srcset string on purpose. srcset is a
+  URL-context attribute, so handing the template one pre-joined string makes Go
+  URL-escape the separators and emit "...webp%20640w". Callers build the
+  attribute themselves, keeping each URL its own expression and the commas and
+  widths literal template text.
+
+  768w exists because a ~412px viewport at DPR 1.75 needs ~763px; without it the
+  browser jumps to 1024w and downloads roughly 21 KB it cannot display.
+*/ -}}
+{{- $orig := . -}}
+{{- $base := replace . ".webp" "" -}}
+{{- $sources := slice -}}
+{{- range (slice 640 768 1024) -}}
+  {{- $sources = $sources | append (dict "url" ((printf "%s-%dw.webp" $base .) | relURL) "w" .) -}}
+{{- end -}}
+{{- $sources = $sources | append (dict "url" ($orig | relURL) "w" 1920) -}}
+{{- return $sources -}}
