@@ -27,7 +27,9 @@ func TestNoChangeWhenAllPresentAndQualifying(t *testing.T) {
 }
 
 func TestAbsentReviewIsTombstoned(t *testing.T) {
-	existing := []Review{rev("a", 5, longText), rev("gone", 5, longText)}
+	// Distinct text per review: reconcile falls back to matching on text, and
+	// real reviews never share wording (all 127 in data/reviews.json are unique).
+	existing := []Review{rev("a", 5, longText), rev("gone", 5, "quite different wording "+longText)}
 	fetched := []Review{rev("a", 5, longText)}
 	out, tomb, skipped := reconcile(existing, fetched, "2026-07-31", 5)
 	if skipped {
@@ -88,9 +90,46 @@ func TestAlreadyTombstonedIsLeftAlone(t *testing.T) {
 	}
 }
 
+func TestLegacyIDStillMatchesByText(t *testing.T) {
+	// Records captured while the site used the Places API carry places/... ids.
+	// The Business Profile API never returns those, so matching on ID alone
+	// would tombstone them even though the review is still live. The text must
+	// rescue them. This is not hypothetical: a dry run proposed removing all six
+	// such records at once.
+	stored := rev("places/ChIJvQmm/reviews/Ci9DQUlR", 5, longText)
+	live := rev("accounts/123/locations/456/reviews/AbFvOq", 5, longText)
+	out, tomb, _ := reconcile([]Review{stored}, []Review{live}, "2026-07-31", 5)
+	if len(tomb) != 0 {
+		t.Fatalf("legacy-id record tombstoned despite its text being live: %+v", tomb)
+	}
+	if out[0].Removed != "" {
+		t.Fatal("legacy-id record marked removed")
+	}
+}
+
+func TestTextMatchStillHonoursTheDisplayBar(t *testing.T) {
+	// Matching by text must not smuggle in a review that no longer qualifies.
+	stored := rev("places/old", 5, longText)
+	live := rev("accounts/new", 4, longText) // same text, downgraded to 4 stars
+	_, tomb, _ := reconcile([]Review{stored}, []Review{live}, "2026-07-31", 5)
+	if len(tomb) != 1 {
+		t.Fatalf("text-matched but demoted review should be tombstoned, got %d", len(tomb))
+	}
+}
+
+func TestGenuinelyGoneIsStillTombstonedWithTextFallback(t *testing.T) {
+	// The text fallback must not make removal impossible.
+	stored := rev("accounts/123/reviews/gone", 5, longText)
+	other := rev("accounts/123/reviews/other", 5, "completely different wording here "+longText)
+	_, tomb, _ := reconcile([]Review{stored}, []Review{other}, "2026-07-31", 5)
+	if len(tomb) != 1 {
+		t.Fatalf("a genuinely absent review should still be tombstoned, got %d", len(tomb))
+	}
+}
+
 func TestEmptyIDIsNeverTombstoned(t *testing.T) {
 	// A review with no ID cannot be proven absent, so it must never be removed.
-	out, tomb, _ := reconcile([]Review{rev("", 5, longText)}, nil, "2026-07-31", 5)
+	out, tomb, _ := reconcile([]Review{{ID: "", Text: ""}}, nil, "2026-07-31", 5)
 	if len(tomb) != 0 || out[0].Removed != "" {
 		t.Fatal("review without an ID was tombstoned")
 	}

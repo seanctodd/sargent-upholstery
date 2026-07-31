@@ -238,20 +238,32 @@ func fetchBusinessProfileReviews(locationName, accessToken string) fetchOutcome 
 // like a mass deletion and be committed automatically.
 func reconcile(existing []Review, fetched []Review, today string, maxRemovals int) (out []Review, tombstoned []Review, skipped bool) {
 	byID := make(map[string]Review, len(fetched))
+	byText := make(map[string]Review, len(fetched))
 	for _, r := range fetched {
 		if r.ID != "" {
 			byID[r.ID] = r
+		}
+		if r.Text != "" {
+			byText[normalizeText(r.Text)] = r
 		}
 	}
 
 	var idx []int
 	for i, r := range existing {
-		// Already tombstoned, or no ID to match on -- leave alone. Reviews
-		// without an ID cannot be proven absent, so they are never removed.
-		if r.Removed != "" || r.ID == "" {
+		// Already tombstoned, or nothing to match on -- leave alone. A review
+		// that cannot be looked up cannot be proven absent.
+		if r.Removed != "" || (r.ID == "" && r.Text == "") {
 			continue
 		}
+		// Match by ID, then fall back to normalised text -- the same pairing the
+		// add path uses for dedup. Review IDs are NOT stable across data
+		// sources: records captured while the site used the Places API carry
+		// places/... ids that the Business Profile API will never return, so an
+		// ID-only match would tombstone every one of them as a false positive.
 		current, present := byID[r.ID]
+		if !present && r.Text != "" {
+			current, present = byText[normalizeText(r.Text)]
+		}
 		if !present || !qualifies(current) {
 			idx = append(idx, i)
 		}
