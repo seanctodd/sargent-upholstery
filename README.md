@@ -39,7 +39,7 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 - Instagram Graph API (official; weekly fetch committed to the repo, then build-time image processing)
 - Google Business Profile API v4 (review fetching via OAuth 2.0)
 - Cloudflare R2 (hosts Instagram Reels videos, served from `media.sargentupholstery.com`)
-- Google Analytics (`gtag.js`) — the one third-party script on the site
+- Cloudflare Web Analytics (cookieless; beacon injected at the edge, nothing in the templates)
 - Cloudflare Pages hosting with GitHub Actions for scheduled review & Instagram fetching
 - Zero database requirements
 
@@ -312,7 +312,9 @@ Key optimizations:
 - **`fetchpriority="high"`** — on hero images for faster LCP discovery
 - **Cloudflare Pages caching** — immutable cache headers for static assets, no-cache for HTML
 
-> **Note:** Google Analytics (`gtag.js`) is the single third-party script loaded site-wide. Everything else (fonts, lightbox, the YouTube facade, Reels video) is first-party or loads no JS until interaction.
+> **Note:** No analytics script is loaded from the templates. Traffic is measured by Cloudflare Web Analytics, whose beacon Cloudflare injects at the edge. Everything else (fonts, lightbox, the YouTube facade, Reels video) is first-party or loads no JS until interaction.
+>
+> Google Analytics was removed on 2026-07-31: `gtag.js` was 167 KiB (70 KiB unused) — nearly twice the weight of the entire first-party page — and the only source of long main-thread tasks. Cloudflare Web Analytics covers pageviews, referrers and geography at a fraction of the cost and needs no cookie banner.
 
 ---
 

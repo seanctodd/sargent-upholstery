@@ -26,7 +26,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com https://www.googletagmanager.com https://*.google-analytics.com; media-src 'self' https://media.sargentupholstery.com; font-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; frame-src https://www.youtube.com https://www.google.com https://app.shopmonkey.cloud; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com; media-src 'self' https://media.sargentupholstery.com; font-src 'self'; connect-src 'self'; frame-src https://www.youtube.com https://www.google.com https://app.shopmonkey.cloud; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # Cache-Control is set by exactly ONE rule per path below. Cloudflare Pages
 # merges every matching rule and joins duplicate headers with a comma, so two
