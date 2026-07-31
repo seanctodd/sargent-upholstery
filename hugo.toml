@@ -19,7 +19,10 @@ defaultContentLanguageInSubdir = false
     [minify.tdewolff.html]
       keepWhitespace = false
     [minify.tdewolff.css]
-      keepCSS2 = true
+      # Target CSS level 2 output. Replaces the deprecated `keepCSS2 = true`
+      # (removed-pending since Hugo v0.150.0); produces byte-identical CSS.
+      # Requires Hugo >= 0.150.0 — see .hugo-version.
+      version = 2
 
 [outputs]
   home = ["HTML", "RSS"]

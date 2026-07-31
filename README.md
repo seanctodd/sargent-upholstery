@@ -48,7 +48,7 @@ This repository contains a static website for **Sargent Upholstery Co.**, Jackso
 ## Quick Start
 
 ### Prerequisites
-- **Hugo Extended** (0.147.8 or later, matching the deployed `HUGO_VERSION`) — required for image processing and the asset pipeline
+- **Hugo Extended** — required for image processing and the asset pipeline. Use the **exact** version in [`.hugo-version`](.hugo-version) (currently `0.154.5`); different versions produce different image hashes, so an unmatched version will re-fingerprint every processed asset.
   - Download: https://gohugo.io/getting-started/installing/
 
 ### Build Locally
@@ -82,7 +82,12 @@ The site is hosted on **Cloudflare Pages**, which builds and deploys automatical
 **Cloudflare Pages build settings:**
 - **Build command:** `hugo --minify`
 - **Build output directory:** `public`
-- **Environment variable:** `HUGO_VERSION` = `0.147.8`
+- **Environment variable:** `HUGO_VERSION` = the value in [`.hugo-version`](.hugo-version) (currently `0.154.5`)
+- **Build image:** v2 or v3 (both Ubuntu 22.04). Hugo Extended 0.154.5 needs `GLIBC_2.34` / `GLIBCXX_3.4.29`, which Ubuntu 20.04 (build image v1) does not provide.
+
+> ⚠️ **`HUGO_VERSION` cannot be set from the repository.** Cloudflare Pages reads build environment variables from the dashboard only (**Workers & Pages → the project → Settings → Environment variables**). `.hugo-version` is the source of truth for humans and local tooling; **when you change it, update the dashboard variable in the same session or the two will drift.**
+>
+> If `HUGO_VERSION` is unset, Cloudflare falls back to the build image default (v3 → `0.147.7`), which predates the `minify.tdewolff.css.version` key in `hugo.toml` and would silently change the minified CSS.
 
 A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetch fresh Google Reviews:
 1. Fetches reviews via `scripts/fetch-reviews.go` (requires the four `GOOGLE_*` OAuth secrets)
@@ -268,7 +273,7 @@ Changes auto-reload in dev server.
 
 ## Dependencies
 
-- **Hugo Extended** 0.147.8+ (for image processing and the asset pipeline)
+- **Hugo Extended** — exact version pinned in [`.hugo-version`](.hugo-version) (for image processing and the asset pipeline)
 - No npm, no Node.js, no database required
 
 ---
