@@ -155,6 +155,37 @@ This API uses **OAuth 2.0**, not a plain API key. One-time setup:
 Reviews are filtered to 5-star with 20+ words, saved to `data/reviews.json`, and
 displayed on the homepage.
 
+#### Recency window
+
+`data/reviews.json` is a **complete archive** — every qualifying review back to
+2016. That is deliberate: reconciliation matches stored records against the full
+API response, so trimming the file would break removal detection.
+
+The homepage instead windows at render time. `themes/sargent/layouts/partials/reviews.html`:
+
+```go-html-template
+{{ $windowMonths := -12 }}
+{{ $cutoff := (now.AddDate 0 $windowMonths 0).Format "2006-01-02" }}
+```
+
+Change that one number to widen or narrow it — nothing is discarded either way,
+and it takes effect on the next build. Current pool sizes:
+
+| Window | Reviews available |
+|---|---|
+| 3 months | 15 |
+| 6 months | 23 |
+| 12 months (current) | 58 |
+| all time | 127 |
+
+Four are shuffled onto the page each build. If the window ever holds fewer than
+four, it falls back to the four most recent regardless of age, so the grid never
+renders half-empty.
+
+> The cutoff is computed at **build** time, so it only advances when the site
+> rebuilds. The weekly review and Instagram jobs commit often enough to keep it
+> sliding.
+
 #### Removals (reconciliation)
 
 A review that is deleted on Google, or edited below the display bar (under 5

@@ -3,7 +3,25 @@
 {{/* Exclude tombstoned reviews: those deleted from Google, or edited below the
      display bar. fetch-reviews marks them with a "removed" date rather than
      deleting the record, so history survives in git. */}}
-{{- $fivestar := where (where $reviews "rating" 5) "removed" nil -}}
+{{- $qualifying := where (where $reviews "rating" 5) "removed" nil -}}
+
+{{/* Show recent work only. data/reviews.json is a complete archive going back to
+     2016 -- deliberately, since reconciliation matches stored records against
+     the full API response -- so the recency window belongs here at render time,
+     not in the fetch script. Change $windowMonths to widen or narrow it; nothing
+     is discarded either way. */}}
+{{- $windowMonths := -12 -}}
+{{- $cutoff := (now.AddDate 0 $windowMonths 0).Format "2006-01-02" -}}
+{{- $fivestar := where $qualifying "date" "ge" $cutoff -}}
+
+{{/* Safety net: if the window ever holds fewer than we display, fall back to the
+     most recent reviews regardless of age. reviews.json is sorted newest-first,
+     so `first` gives exactly those. Without this a quiet stretch would render a
+     half-empty grid, or none at all. */}}
+{{- if lt (len $fivestar) 4 -}}
+  {{- $fivestar = first 4 $qualifying -}}
+{{- end -}}
+
 {{- if $fivestar -}}
 {{- $shuffled := shuffle $fivestar -}}
 {{- $selected := first 4 $shuffled -}}
