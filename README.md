@@ -101,7 +101,7 @@ The site is hosted on **Cloudflare Pages**, which builds and deploys automatical
 |---|---|
 | **Hugo build** | Installs the exact binary from `.hugo-version` (same release Cloudflare downloads), builds, and **fails on any `WARN`** — this is what catches deprecated config keys. Then asserts key artefacts exist and that empty taxonomy pages have not returned to the sitemap. |
 | **JS behaviour tests** | `node tests/lite-youtube.test.js` under jsdom — 14 assertions covering the YouTube facade's keyboard handling, re-activation guard, and label fallbacks. |
-| **Go scripts** | `gofmt`, `go vet`, and `go build` on each script (each is its own `package main`, so they are checked one file at a time). |
+| **Go scripts** | `gofmt`, `go vet ./...`, `go build ./...`, and `go test ./...` — the latter covers `reconcile()`, the logic that decides when a review stops being displayed. |
 
 > `--panicOnWarning` is deliberately **not** used: it does not fail on config deprecations (it logs them and exits `0`). The build log is grepped for `^WARN` instead.
 >
@@ -112,11 +112,11 @@ Run the same checks locally:
 ```bash
 hugo --gc --printPathWarnings          # must print no WARN lines
 npm install --no-save jsdom && node tests/lite-youtube.test.js
-gofmt -l scripts/ && for f in scripts/*.go; do go vet "$f"; done
+gofmt -l . && go vet ./... && go test ./...
 ```
 
 A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetch fresh Google Reviews:
-1. Fetches reviews via `scripts/fetch-reviews.go` (requires the four `GOOGLE_*` OAuth secrets)
+1. Fetches reviews via `scripts/fetch-reviews` (requires the four `GOOGLE_*` OAuth secrets)
 2. Commits updated `data/reviews.json` back to the repo
 3. The commit triggers a Cloudflare Pages rebuild automatically
 
@@ -135,7 +135,7 @@ This API uses **OAuth 2.0**, not a plain API key. One-time setup:
    `client_secret_*.json` file.
 3. Run the setup helper, which authorizes in your browser and prints the secrets:
    ```bash
-   go run scripts/setup-business-profile.go /path/to/client_secret.json
+   go run ./scripts/setup-business-profile /path/to/client_secret.json
    ```
 4. Add the four printed values as GitHub Actions repository secrets:
    `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`,
@@ -143,6 +143,40 @@ This API uses **OAuth 2.0**, not a plain API key. One-time setup:
 
 Reviews are filtered to 5-star with 20+ words, saved to `data/reviews.json`, and
 displayed on the homepage.
+
+#### Removals (reconciliation)
+
+A review that is deleted on Google, or edited below the display bar (under 5
+stars, or shortened under 20 words), is **tombstoned** — the record keeps its
+history and gains a `"removed": "YYYY-MM-DD"` field. `reviews.html` filters
+those out with `where ... "removed" nil`. Nothing is ever deleted from the file,
+so a false positive is undone by clearing the field.
+
+Removals are far riskier than additions: an absent review may simply mean the
+fetch failed halfway. Three gates must all pass before anything is tombstoned:
+
+1. every page fetched without error, **and**
+2. the API reported `totalReviewCount`, **and**
+3. the number fetched equals that total.
+
+If any gate fails the run still adds new reviews but skips removals entirely and
+emits a CI warning. A fourth guard caps the blast radius: a run proposing more
+than `REVIEWS_MAX_REMOVALS` (default 5) changes nothing and lists what it would
+have removed, so an API anomaly cannot quietly wipe the archive.
+
+Content of a still-qualifying review is **never** rewritten — edits upstream do
+not change text already captured.
+
+| Variable | Purpose |
+|---|---|
+| `REVIEWS_DRY_RUN` | Set to anything to report changes without writing the file |
+| `REVIEWS_MAX_REMOVALS` | Override the default cap of 5 removals per run |
+
+Preview what a run would do without touching anything:
+
+```bash
+REVIEWS_DRY_RUN=1 go run ./scripts/fetch-reviews
+```
 
 ---
 
@@ -170,10 +204,13 @@ sargent-upholstery/
 ├── data/
 │   ├── reviews.json            # Google Reviews (fetched by CI)
 │   └── instagram.json          # Instagram posts metadata (fetched by CI)
-├── scripts/
-│   ├── fetch-reviews.go        # Google Reviews fetch script (Business Profile v4)
-│   ├── fetch-instagram.go      # Instagram Graph API fetch script
-│   └── setup-business-profile.go  # One-time OAuth setup → prints CI secrets
+├── go.mod                      # Module for the scripts (the site needs no Go)
+├── scripts/                    # One package per command: `go run ./scripts/<name>`
+│   ├── fetch-reviews/          # Google Reviews fetch (Business Profile v4)
+│   │   ├── main.go
+│   │   └── reconcile_test.go   # Tests for the review removal logic
+│   ├── fetch-instagram/        # Instagram Graph API fetch
+│   └── setup-business-profile/ # One-time OAuth setup → prints CI secrets
 ├── reels/                      # Instagram Reels MP4 staging (gitignored; synced to R2)
 ├── docs/superpowers/           # Design specs & implementation plans
 ├── static/

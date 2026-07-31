@@ -111,27 +111,19 @@ jobs:
 
       - name: gofmt
         run: |
-          unformatted="$(gofmt -l scripts/)"
+          unformatted="$(gofmt -l .)"
           if [ -n "$unformatted" ]; then
             echo "::error::gofmt needed for: $unformatted"
             exit 1
           fi
 
-      # Each script is its own `package main` in one directory, so they must be
-      # vetted (and built) one file at a time rather than as a package.
       - name: go vet
-        run: |
-          fail=0
-          for f in scripts/*.go; do
-            echo "vet $f"
-            go vet "$f" || fail=1
-          done
-          exit $fail
+        run: go vet ./...
 
       - name: go build
-        run: |
-          fail=0
-          for f in scripts/*.go; do
-            go build -o /dev/null "$f" || fail=1
-          done
-          exit $fail
+        run: go build ./...
+
+      # Covers reconcile() -- the logic that decides when a review stops being
+      # displayed. Worth real tests: a false positive hides genuine reviews.
+      - name: go test
+        run: go test ./...

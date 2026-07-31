@@ -1,6 +1,9 @@
 {{- $reviews := site.Data.reviews -}}
 {{- if $reviews -}}
-{{- $fivestar := where $reviews "rating" 5 -}}
+{{/* Exclude tombstoned reviews: those deleted from Google, or edited below the
+     display bar. fetch-reviews marks them with a "removed" date rather than
+     deleting the record, so history survives in git. */}}
+{{- $fivestar := where (where $reviews "rating" 5) "removed" nil -}}
 {{- if $fivestar -}}
 {{- $shuffled := shuffle $fivestar -}}
 {{- $selected := first 4 $shuffled -}}

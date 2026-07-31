@@ -29,7 +29,7 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
           GOOGLE_LOCATION_NAME: ${{ secrets.GOOGLE_LOCATION_NAME }}
-        run: go run scripts/fetch-reviews.go
+        run: go run ./scripts/fetch-reviews
       - name: Commit new reviews
         run: |
           git config user.name "github-actions[bot]"

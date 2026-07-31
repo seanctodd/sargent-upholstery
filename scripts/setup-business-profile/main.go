@@ -5,7 +5,7 @@
 //
 // Usage:
 //
-//	go run scripts/setup-business-profile.go /path/to/client_secret.json
+//	go run ./scripts/setup-business-profile /path/to/client_secret.json
 //
 // Prerequisites (do this once in Google Cloud Console):
 //  1. Use the SAME project that was granted Business Profile API access
@@ -64,7 +64,7 @@ const (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "Usage: go run scripts/setup-business-profile.go /path/to/client_secret.json")
+		fmt.Fprintln(os.Stderr, "Usage: go run ./scripts/setup-business-profile /path/to/client_secret.json")
 		os.Exit(1)
 	}
 

@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -17,6 +18,10 @@ var httpClient = &http.Client{Timeout: 30 * time.Second}
 
 const (
 	minWords = 20
+	// defaultMaxRemovals caps how many reviews a single run may tombstone.
+	// Deletions are rare and arrive one at a time; a run proposing more than
+	// this is far more likely to be an API anomaly than genuine churn.
+	defaultMaxRemovals = 5
 )
 
 type Review struct {
@@ -25,6 +30,17 @@ type Review struct {
 	Rating int    `json:"rating"`
 	Text   string `json:"text"`
 	Date   string `json:"date"`
+	// Removed is the UTC date (YYYY-MM-DD) on which this review stopped being
+	// displayable -- deleted from Google, or edited below the display bar.
+	// Records are tombstoned rather than deleted so nothing is ever lost and a
+	// false positive can be undone by clearing this field. reviews.html filters
+	// them out with `where ... "removed" nil`.
+	Removed string `json:"removed,omitempty"`
+}
+
+// qualifies reports whether a review meets the bar for display on the site.
+func qualifies(r Review) bool {
+	return r.Rating == 5 && len(strings.Fields(r.Text)) >= minWords
 }
 
 // ---- Business Profile API structures ----
@@ -32,6 +48,11 @@ type Review struct {
 type bpReviewsResponse struct {
 	Reviews       []bpReview `json:"reviews"`
 	NextPageToken string     `json:"nextPageToken"`
+	// TotalReviewCount is the total across ALL pages, not just this one. It is
+	// what lets us prove a fetch was complete before trusting an absence to
+	// mean "deleted" rather than "not retrieved".
+	TotalReviewCount int     `json:"totalReviewCount"`
+	AverageRating    float64 `json:"averageRating"`
 }
 
 type bpReview struct {
@@ -134,7 +155,16 @@ func getAccessToken(clientID, clientSecret, refreshToken string) (string, error)
 	return tok.AccessToken, nil
 }
 
-func fetchBusinessProfileReviews(locationName, accessToken string) []Review {
+// fetchOutcome carries the raw (unfiltered) reviews plus enough metadata to
+// decide whether an absence can be trusted.
+type fetchOutcome struct {
+	reviews  []Review // every review returned, at any star rating
+	total    int      // totalReviewCount reported by the API (0 if absent)
+	complete bool     // true only if every page was fetched without error
+}
+
+func fetchBusinessProfileReviews(locationName, accessToken string) fetchOutcome {
+	out := fetchOutcome{}
 	var all []Review
 	pageToken := ""
 	page := 1
@@ -166,6 +196,9 @@ func fetchBusinessProfileReviews(locationName, accessToken string) []Review {
 			break
 		}
 		fmt.Printf("[business-profile-p%d] Parsed %d reviews\n", page, len(resp.Reviews))
+		if resp.TotalReviewCount > out.total {
+			out.total = resp.TotalReviewCount
+		}
 
 		for _, r := range resp.Reviews {
 			date := r.UpdateTime
@@ -182,13 +215,63 @@ func fetchBusinessProfileReviews(locationName, accessToken string) []Review {
 		}
 
 		if resp.NextPageToken == "" {
+			// Ran out of pages with no error: this is the only path that yields
+			// a provably complete fetch.
+			out.complete = true
 			break
 		}
 		pageToken = resp.NextPageToken
 		page++
 	}
 
-	return all
+	out.reviews = all
+	return out
+}
+
+// reconcile tombstones reviews that are gone from Google, or that no longer
+// meet the display bar. It never deletes a record and never rewrites the
+// content of a review that still qualifies.
+//
+// maxRemovals caps the blast radius: if a run would tombstone more than this,
+// nothing is changed and skipped is true. That guards against the case where
+// the API silently stops returning older reviews -- which would otherwise look
+// like a mass deletion and be committed automatically.
+func reconcile(existing []Review, fetched []Review, today string, maxRemovals int) (out []Review, tombstoned []Review, skipped bool) {
+	byID := make(map[string]Review, len(fetched))
+	for _, r := range fetched {
+		if r.ID != "" {
+			byID[r.ID] = r
+		}
+	}
+
+	var idx []int
+	for i, r := range existing {
+		// Already tombstoned, or no ID to match on -- leave alone. Reviews
+		// without an ID cannot be proven absent, so they are never removed.
+		if r.Removed != "" || r.ID == "" {
+			continue
+		}
+		current, present := byID[r.ID]
+		if !present || !qualifies(current) {
+			idx = append(idx, i)
+		}
+	}
+
+	// Work on a copy so a skipped run leaves the caller's slice untouched.
+	out = make([]Review, len(existing))
+	copy(out, existing)
+
+	if len(idx) > maxRemovals {
+		for _, i := range idx {
+			tombstoned = append(tombstoned, existing[i])
+		}
+		return out, tombstoned, true
+	}
+	for _, i := range idx {
+		out[i].Removed = today
+		tombstoned = append(tombstoned, out[i])
+	}
+	return out, tombstoned, false
 }
 
 // ---- Shared helpers ----
@@ -209,6 +292,22 @@ func main() {
 		fmt.Println("Business Profile API credentials not set, skipping review fetch")
 		fmt.Println("Set GOOGLE_CLIENT_ID + GOOGLE_CLIENT_SECRET + GOOGLE_REFRESH_TOKEN + GOOGLE_LOCATION_NAME")
 		os.Exit(0)
+	}
+
+	// REVIEWS_DRY_RUN reports what would change without touching the file --
+	// use it the first time reconciliation runs against real data.
+	dryRun := os.Getenv("REVIEWS_DRY_RUN") != ""
+	if dryRun {
+		fmt.Println("DRY RUN: no file will be written")
+	}
+	maxRemovals := defaultMaxRemovals
+	if v := os.Getenv("REVIEWS_MAX_REMOVALS"); v != "" {
+		n, err := strconv.Atoi(v)
+		if err != nil || n < 0 {
+			fmt.Fprintf(os.Stderr, "Invalid REVIEWS_MAX_REMOVALS %q: want a non-negative integer\n", v)
+			os.Exit(1)
+		}
+		maxRemovals = n
 	}
 
 	scriptDir, err := os.Getwd()
@@ -253,13 +352,15 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Println("Access token obtained")
-	candidates := fetchBusinessProfileReviews(locationName, accessToken)
+	outcome := fetchBusinessProfileReviews(locationName, accessToken)
+	candidates := outcome.reviews
 
 	if len(candidates) == 0 {
 		fmt.Fprintln(os.Stderr, "No reviews fetched from Business Profile API")
 		os.Exit(1)
 	}
-	fmt.Printf("Total candidates before filtering: %d\n", len(candidates))
+	fmt.Printf("Total candidates before filtering: %d (API reports %d total)\n",
+		len(candidates), outcome.total)
 
 	// Build dedup sets
 	existingIDs := make(map[string]bool)
@@ -304,6 +405,42 @@ func main() {
 	fmt.Printf("Filtered out: %d not 5-star, %d too short (<%d words), %d duplicates\n",
 		skippedRating, skippedShort, minWords, skippedDup)
 
+	// ---- Reconciliation ----
+	//
+	// Additions above are always safe. Removals are not: an absent review might
+	// mean "deleted from Google" or merely "not retrieved". Only tombstone when
+	// the fetch is provably complete.
+	removedCount := 0
+	switch {
+	case !outcome.complete:
+		fmt.Printf("::warning::Reviews fetch was incomplete (a page failed); " +
+			"skipping removal checks. New reviews were still added.\n")
+	case outcome.total == 0:
+		fmt.Printf("::warning::API did not report totalReviewCount; cannot prove the " +
+			"fetch was complete, so skipping removal checks.\n")
+	case len(candidates) != outcome.total:
+		fmt.Printf("::warning::Fetched %d reviews but API reports %d total; "+
+			"skipping removal checks.\n", len(candidates), outcome.total)
+	default:
+		today := time.Now().UTC().Format("2006-01-02")
+		updated, tombstoned, skipped := reconcile(existing, candidates, today, maxRemovals)
+		if skipped {
+			fmt.Printf("::warning::%d reviews would be marked removed, which exceeds the "+
+				"limit of %d. Nothing was changed. Review the list below and, if it is "+
+				"correct, re-run with REVIEWS_MAX_REMOVALS set higher.\n",
+				len(tombstoned), maxRemovals)
+			for _, r := range tombstoned {
+				fmt.Printf("  would remove: %s (%s, %s)\n", r.ID, r.Author, r.Date)
+			}
+		} else {
+			existing = updated
+			removedCount = len(tombstoned)
+			for _, r := range tombstoned {
+				fmt.Printf("  marked removed: %s (%s, %s)\n", r.ID, r.Author, r.Date)
+			}
+		}
+	}
+
 	// Sort by date descending
 	sort.Slice(existing, func(i, j int) bool {
 		return existing[i].Date > existing[j].Date
@@ -313,6 +450,11 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error marshaling JSON: %v\n", err)
 		os.Exit(1)
+	}
+	if dryRun {
+		fmt.Printf("DRY RUN: would write %d reviews (%d new, %d newly removed); "+
+			"no file was modified\n", len(existing), newCount, removedCount)
+		return
 	}
 	if err := os.WriteFile(dataFile, out, 0644); err != nil {
 		fmt.Fprintf(os.Stderr, "Error writing file: %v\n", err)
