@@ -1,7 +1,7 @@
 <header class="site-header">
   <div class="container header-inner">
     <a href="{{ "" | relURL }}" class="logo">
-      {{- $navLogo := resources.Get "images/non-oval-logo-white.svg" | fingerprint -}}
+      {{- $navLogo := resources.Get "img/non-oval-logo-white.svg" | fingerprint -}}
       <img src="{{ $navLogo.RelPermalink }}" alt="{{ .Site.Title }}" width="261" height="110">
     </a>
     <input type="checkbox" id="nav-toggle" class="nav-toggle-checkbox">

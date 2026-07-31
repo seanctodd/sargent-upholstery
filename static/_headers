@@ -1,9 +1,13 @@
 # static.cloudflareinsights.com is Cloudflare Web Analytics' beacon, injected at
 # the edge. It was enabled on the zone but blocked by this policy, so it had
 # never collected anything and logged a console error on every page load --
-# which Lighthouse's Best Practices audit counts against the site. Its data goes
-# to <domain>/cdn-cgi/rum for proxied sites, so connect-src 'self' already
-# covers the reporting call and no connect-src entry is needed.
+# which Lighthouse's Best Practices audit counts against the site.
+#
+# It needs BOTH entries. Cloudflare's docs describe proxied sites reporting to
+# <domain>/cdn-cgi/rum, which 'self' would cover -- but the beacon actually
+# POSTs to the absolute host https://cloudflareinsights.com/cdn-cgi/rum, so
+# connect-src needs it too. Allowing only the script host loads the beacon but
+# silently blocks every report, which still fails the console-errors audit.
 #
 # script-src keeps 'unsafe-inline' for Cloudflare, not for this site. Cloudflare
 # injects a JavaScript Detections bootstrap into every HTML response at the edge
@@ -26,7 +30,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Permissions-Policy: geolocation=(), microphone=(), camera=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com; media-src 'self' https://media.sargentupholstery.com; font-src 'self'; connect-src 'self'; frame-src https://www.youtube.com https://www.google.com https://app.shopmonkey.cloud; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://i.ytimg.com; media-src 'self' https://media.sargentupholstery.com; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https://www.youtube.com https://www.google.com https://app.shopmonkey.cloud; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # Cache-Control is set by exactly ONE rule per path below. Cloudflare Pages
 # merges every matching rule and joins duplicate headers with a comma, so two
@@ -44,6 +48,13 @@
 /instagram/*
   Cache-Control: public, max-age=31536000, immutable
 
+# Logos, fingerprinted from themes/sargent/assets/img/. They live under /img/
+# rather than /images/ so this rule can mark them immutable without also
+# matching the hand-made hero variants, which are not fingerprinted. Two rules
+# matching one file would emit a comma-joined Cache-Control.
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
 # Copied verbatim from static/ at FIXED urls -- the filename does not change
 # when the content does. `immutable` here told browsers not to revalidate even
 # on an explicit reload, which pinned a broken logo.svg for up to a year. Cache
@@ -51,11 +62,16 @@
 #
 # Anything that must be updatable on demand belongs in the pipeline instead:
 # move it under themes/sargent/assets/ and pipe it through `fingerprint`.
+# Hero variants, hand-generated and served at fixed names. A week, because
+# swapping a hero keeps its filename and returning visitors must pick it up.
 /images/*
   Cache-Control: public, max-age=604800
 
+# The font is also a fixed name, but it is a pinned Work Sans subset that has no
+# reason to change. A year, still WITHOUT immutable, so a reload can recover if
+# it ever does.
 /fonts/*
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=31536000
 
 # No rule for HTML on purpose. These globs match the REQUEST PATH, and Hugo
 # serves clean URLs (/gallery/, not /gallery/index.html), so a `/*.html` rule

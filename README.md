@@ -93,8 +93,10 @@ The site is hosted on **Cloudflare Pages**, which builds and deploys automatical
 
 `static/_headers` splits assets into two groups, and the split matters:
 
-- **Fingerprinted** (`/css/*`, `/js/*`, `/instagram/*`) — Hugo puts a content hash in the filename, so the URL changes whenever the bytes do. Cached `immutable` for a year.
-- **Copied verbatim from `static/`** (`/images/*`, `/fonts/*`) — fixed URLs, so the filename does *not* change with the content. One week, **without** `immutable`.
+- **Fingerprinted** (`/css/*`, `/js/*`, `/img/*`, `/instagram/*`) — Hugo puts a content hash in the filename, so the URL changes whenever the bytes do. Cached `immutable` for a year.
+- **Copied verbatim from `static/`** (`/images/*`, `/fonts/*`) — fixed URLs, so the filename does *not* change with the content. Never `immutable`: heroes get a week because swapping one keeps its filename, and the font gets a year because a pinned subset has no reason to change.
+
+> The logos live at `/img/*` rather than `/images/*` specifically so the immutable rule can cover them without also matching the hand-made hero variants. Cloudflare merges overlapping rules into a comma-joined `Cache-Control`.
 
 > ⚠️ Never mark a non-fingerprinted asset `immutable`. It tells browsers not to revalidate *even on an explicit reload*, so a bad file stays pinned for the full TTL with no way to push a fix. This is not hypothetical: `logo.svg` and `js/main.js` were served that way, and corrected versions of both were invisible to anyone who had already loaded the site. **If an asset needs to be updatable, put it in `themes/sargent/assets/` and pipe it through `fingerprint`** rather than shortening its TTL.
 
