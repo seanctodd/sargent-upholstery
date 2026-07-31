@@ -117,6 +117,14 @@ func fetchMedia(token string) ([]mediaItem, error) {
 	return mr.Data, nil
 }
 
+// ours reports whether a filename in assets/instagram/ is one this script could
+// have written, and so is safe to delete when the feed no longer references it.
+// Post images are always "<id>.jpg"; ".tmp-*" are leftovers from a download
+// interrupted mid-write. Anything else was put there by someone else.
+func ours(name string) bool {
+	return strings.HasSuffix(name, ".jpg") || strings.HasPrefix(name, ".tmp-")
+}
+
 // downloadFile writes the body of url to dst.
 func downloadFile(fileURL, dst string) error {
 	resp, err := httpClient.Get(fileURL)
@@ -248,17 +256,32 @@ func main() {
 		os.Exit(1)
 	}
 
-	// 4. Prune images no longer referenced.
+	// 4. Prune images no longer referenced. Only ever touch regular .jpg files
+	// this script could have written: anything else in the directory (a
+	// .gitkeep, a README, a subdirectory) belongs to someone else and is not
+	// ours to delete. Leftover .tmp-* files from an interrupted download are
+	// ours, so clear those too.
 	entries, err := os.ReadDir(imgDir)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "warning: could not read %s for pruning: %v\n", imgDir, err)
 	}
 	for _, e := range entries {
-		if !keep[e.Name()] {
-			if err := os.Remove(filepath.Join(imgDir, e.Name())); err == nil {
-				fmt.Printf("pruned %s\n", e.Name())
-			}
+		name := e.Name()
+		if e.IsDir() || keep[name] {
+			continue
 		}
+		if !ours(name) {
+			fmt.Printf("leaving unrecognised file in place: %s\n", name)
+			continue
+		}
+		if err := os.Remove(filepath.Join(imgDir, name)); err != nil {
+			// Not fatal -- a stale image is harmless, it is just no longer
+			// referenced -- but silence here would hide a permissions problem.
+			fmt.Fprintf(os.Stderr, "warning: could not prune %s: %v\n", name, err)
+			fmt.Printf("::warning::Could not prune %s: %v\n", name, err)
+			continue
+		}
+		fmt.Printf("pruned %s\n", name)
 	}
 
 	// 5. Write metadata.

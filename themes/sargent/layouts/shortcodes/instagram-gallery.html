@@ -25,7 +25,7 @@
 {{- end }}
 </div>
 
-<div class="ig-lightbox" id="ig-lightbox">
+<div class="ig-lightbox" id="ig-lightbox" data-post-alt="{{ i18n "ig_post_alt" }}" data-view-label="{{ i18n "ig_view" }}">
   <button class="ig-lightbox-close" aria-label="{{ i18n "ig_close" }}">&times;</button>
   <button class="ig-lightbox-prev" aria-label="{{ i18n "ig_prev" }}">&lsaquo;</button>
   <button class="ig-lightbox-next" aria-label="{{ i18n "ig_next" }}">&rsaquo;</button>
@@ -38,113 +38,5 @@
   </div>
 </div>
 
-<script>
-(function () {
-  var lightbox = document.getElementById('ig-lightbox');
-  var lbImg = lightbox.querySelector('.ig-lightbox-img');
-  var lbVideo = lightbox.querySelector('.ig-lightbox-video');
-  var lbCaption = lightbox.querySelector('.ig-lightbox-link');
-  var lbCaptionWrap = lightbox.querySelector('.ig-lightbox-caption');
-  var items = document.querySelectorAll('.ig-gallery-item[data-large]');
-  var current = 0;
-
-  var closeBtn = lightbox.querySelector('.ig-lightbox-close');
-  var prevBtn = lightbox.querySelector('.ig-lightbox-prev');
-  var nextBtn = lightbox.querySelector('.ig-lightbox-next');
-  var focusable = [closeBtn, prevBtn, nextBtn];
-  var triggerEl = null;
-
-  function show(index) {
-    if (index < 0) index = items.length - 1;
-    if (index >= items.length) index = 0;
-    current = index;
-    var item = items[index];
-    var video = item.getAttribute('data-video');
-    lbVideo.pause();
-    if (video) {
-      lbImg.style.display = 'none';
-      lbVideo.poster = item.getAttribute('data-large');
-      lbVideo.src = video;
-      lbVideo.load();
-      lbVideo.setAttribute('aria-label', item.getAttribute('data-caption') || '{{ i18n "ig_post_alt" }}');
-      lbVideo.style.display = '';
-    } else {
-      lbVideo.removeAttribute('src');
-      lbVideo.load();
-      lbVideo.style.display = 'none';
-      lbImg.src = item.getAttribute('data-large');
-      lbImg.alt = item.getAttribute('data-caption') || '{{ i18n "ig_post_alt" }}';
-      lbImg.style.display = '';
-    }
-    var caption = item.getAttribute('data-caption');
-    var link = item.getAttribute('data-link');
-    lbCaption.textContent = caption || '{{ i18n "ig_view" }}';
-    lbCaption.href = link;
-    lbCaptionWrap.style.display = '';
-    lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    closeBtn.focus();
-  }
-
-  function close() {
-    lbVideo.pause();
-    lbVideo.removeAttribute('src');
-    lbVideo.load();
-    lbVideo.style.display = 'none';
-    lbImg.style.display = '';
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
-    if (triggerEl) {
-      triggerEl.focus();
-      triggerEl = null;
-    }
-  }
-
-  items.forEach(function (item, i) {
-    item.style.cursor = 'pointer';
-    item.addEventListener('click', function () { triggerEl = item; show(i); });
-  });
-
-  closeBtn.addEventListener('click', close);
-  prevBtn.addEventListener('click', function () { show(current - 1); });
-  nextBtn.addEventListener('click', function () { show(current + 1); });
-
-  lightbox.addEventListener('click', function (e) {
-    if (e.target === lightbox) close();
-  });
-
-  document.addEventListener('keydown', function (e) {
-    if (!lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') close();
-    if (e.key === 'ArrowLeft') show(current - 1);
-    if (e.key === 'ArrowRight') show(current + 1);
-    if (e.key === 'Tab') {
-      if (lbVideo.style.display !== 'none') {
-        // Video open: let Tab move through the native video controls; only wrap
-        // at the lightbox boundary so focus can't escape.
-        var all = Array.prototype.slice.call(lightbox.querySelectorAll(
-          'button, [href], video, input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        )).filter(function (el) { return !el.disabled; });
-        var first = all[0];
-        var last = all[all.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      } else {
-        var idx = focusable.indexOf(document.activeElement);
-        if (e.shiftKey) {
-          e.preventDefault();
-          focusable[(idx - 1 + focusable.length) % focusable.length].focus();
-        } else {
-          e.preventDefault();
-          focusable[(idx + 1) % focusable.length].focus();
-        }
-      }
-    }
-  });
-})();
-</script>
+{{ $gallery := resources.Get "js/gallery.js" | minify | fingerprint }}
+<script src="{{ $gallery.RelPermalink }}" defer></script>

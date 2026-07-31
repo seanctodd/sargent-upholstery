@@ -53,4 +53,11 @@
 {{- end }}
 {{ $css := resources.Get "css/style.css" | minify | fingerprint }}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}">
-{{ template "_internal/google_analytics.html" . }}
+{{/* Analytics. Hugo's _internal/google_analytics.html emits its config inline,
+     which would force 'unsafe-inline' into the CSP's script-src; load it from a
+     fingerprinted file instead. Behaviour, including Do Not Track, is the same. */}}
+{{- with site.Config.Services.GoogleAnalytics.ID }}
+<script async src="https://www.googletagmanager.com/gtag/js?id={{ . }}"></script>
+{{- $ga := resources.Get "js/analytics.js" | resources.ExecuteAsTemplate "js/analytics.js" . | minify | fingerprint }}
+<script src="{{ $ga.RelPermalink }}" defer></script>
+{{- end }}
