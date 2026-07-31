@@ -89,6 +89,10 @@ The site is hosted on **Cloudflare Pages**, which builds and deploys automatical
 >
 > If `HUGO_VERSION` is unset, Cloudflare falls back to the build image default (v3 → `0.147.7`), which predates the `minify.tdewolff.css.version` key in `hugo.toml` and would silently change the minified CSS.
 
+**Domain redirect (`www` → apex):** handled by a zone-level **Redirect Rule** (Cloudflare dashboard → **Rules → Redirect Rules**), a `301` matching hostname `www.sargentupholstery.com` and preserving path + query string.
+
+> There is deliberately **no `static/_redirects` file**. Cloudflare Pages `_redirects` can only match *relative paths* — it cannot match hostnames, so it cannot express a `www` → apex redirect. A file attempting this shipped from the GitHub Pages migration until 2026-07-31; every line was rejected (`Parsed 0 valid redirect rules` in the build log) and `www` returned HTTP 522 the whole time. Do not re-add it — use a Redirect Rule.
+
 A **GitHub Actions** workflow (`.github/workflows/hugo.yml`) runs weekly to fetch fresh Google Reviews:
 1. Fetches reviews via `scripts/fetch-reviews.go` (requires the four `GOOGLE_*` OAuth secrets)
 2. Commits updated `data/reviews.json` back to the repo
@@ -154,7 +158,6 @@ sargent-upholstery/
 │   ├── favicon.ico
 │   ├── fonts/                  # Self-hosted Work Sans woff2
 │   ├── _headers                # Cloudflare Pages security + caching headers
-│   ├── _redirects              # www → apex domain redirect
 │   ├── robots.txt              # Crawl directives
 │   └── images/
 │       ├── heroes/             # Hero images (WebP with 640w/1024w/1920w variants)
