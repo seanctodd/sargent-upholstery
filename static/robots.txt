@@ -1,4 +1,17 @@
+# Everything on this site is public marketing content — there is nothing to
+# hide from crawlers, so the whole tree is allowed. AI crawlers (GPTBot,
+# ClaudeBot, CCBot, Google-Extended, ...) are intentionally NOT blocked: being
+# citable when someone asks an assistant about Jacksonville upholstery is a
+# discovery channel, not a leak.
+#
+# robots.txt is advisory and applies to WELL-BEHAVED crawlers only. It is not a
+# security control — never use it to "protect" a path, since listing a path
+# here advertises it. Access control belongs in static/_headers and Cloudflare.
+
 User-agent: *
 Allow: /
 
+# A sitemap INDEX — Hugo generates it from the multilingual config and it
+# points at /en/sitemap.xml and /es/sitemap.xml in turn. Listing the index
+# alone is correct and stays correct if a language is added.
 Sitemap: https://sargentupholstery.com/sitemap.xml

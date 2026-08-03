@@ -262,6 +262,8 @@ sargent-upholstery/
 │   ├── fonts/                  # Self-hosted Work Sans woff2
 │   ├── _headers                # Cloudflare Pages security + caching headers
 │   ├── robots.txt              # Crawl directives
+│   ├── .well-known/
+│   │   └── security.txt        # RFC 9116 disclosure contact (has an expiry date)
 │   └── images/
 │       ├── heroes/             # Hero images (WebP with 640w/1024w/1920w variants)
 │       └── non-oval-logo-color.png

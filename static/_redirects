@@ -1,0 +1,11 @@
+# Cloudflare Pages redirect rules. One rule per line: <from> <to> <status>.
+#
+# RFC 9116 defines /.well-known/security.txt as the only valid location, and
+# that is where the real file lives (static/.well-known/security.txt). Some
+# scanners and older tooling still probe the document root, so point them at
+# the canonical copy rather than maintaining two files that can drift.
+#
+# Pages only consults this file when no static asset matches the request path,
+# so a rule can never shadow a real file.
+
+/security.txt  /.well-known/security.txt  301

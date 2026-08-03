@@ -1,0 +1,17 @@
+# Vulnerability disclosure contact for sargentupholstery.com — RFC 9116.
+#
+# Copied verbatim from static/ to /.well-known/security.txt, which is the only
+# location the RFC defines for a web site. Scanners and researchers look there;
+# a copy at the document root is legacy-only and deliberately not published.
+#
+# NOTE: this file EXPIRES. Past the Expires date below it is formally invalid
+# and tooling will report it as stale, so bump the date (and re-check that the
+# contact address still routes) at least once a year.
+#
+# The `security@` mailbox must exist and be monitored, or reports bounce and
+# this file is worse than having none. It can be a forwarder to a real inbox.
+
+Contact: mailto:security@sargentupholstery.com
+Expires: 2027-08-01T00:00:00.000Z
+Preferred-Languages: en, es
+Canonical: https://sargentupholstery.com/.well-known/security.txt
