@@ -19,10 +19,10 @@
 # The supported alternative is a per-request nonce, which Cloudflare will add to
 # its own scripts; a static Pages site cannot generate one without a Function.
 #
-# The site's own JavaScript is deliberately NOT inline -- analytics.js,
-# gallery.js and main.js are all fingerprinted assets under
-# themes/sargent/assets/js/. Keep it that way: it is better for caching and it
-# is what makes tests/*.test.js able to exercise the real files.
+# The site's own JavaScript is deliberately NOT inline -- gallery.js and main.js
+# are both fingerprinted assets under themes/sargent/assets/js/. Keep it that
+# way: it is better for caching and it is what makes tests/*.test.js able to
+# exercise the real files.
 
 /*
   X-Frame-Options: DENY
