@@ -24,6 +24,14 @@ No se necesita cita — las visitas sin cita previa son bienvenidas durante el h
 
 <div class="faq-item">
 
+### ¿Ofrecen financiamiento?
+
+Sí. Ofrecemos financiamiento para que pueda pagar su proyecto a plazos. Se ofrece en los presupuestos que enviamos — cuando reciba el suyo, podrá elegir una opción de pago a plazos y solicitarla directamente desde ahí. Las solicitudes las gestiona nuestro proveedor de financiamiento y están sujetas a aprobación.
+
+</div>
+
+<div class="faq-item">
+
 ### ¿Qué tipos de vehículos trabajan?
 
 Trabajamos con todo tipo de vehículos — desde autos clásicos y vehículos de uso diario hasta camiones comerciales y flotas de vehículos. Ya sea una restauración vintage o una actualización moderna, tenemos la experiencia para manejarlo.

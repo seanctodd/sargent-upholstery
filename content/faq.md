@@ -24,6 +24,14 @@ Yes! We offer free, no-obligation estimates. Bring your vehicle by during busine
 
 <div class="faq-item">
 
+### Do you offer financing?
+
+Yes. We offer financing so you can pay for your project over time. It's offered on the estimates we send — when you receive yours, you can choose a pay-over-time option and apply right from it. Applications are handled by our financing provider and are subject to approval.
+
+</div>
+
+<div class="faq-item">
+
 ### What types of vehicles do you work on?
 
 We work on all types of vehicles — from classic cars and daily drivers to commercial trucks and fleet vehicles. Whether it's a vintage restoration or a modern upgrade, we have the expertise to handle it.

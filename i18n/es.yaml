@@ -25,8 +25,10 @@ amenity_estimates_title: "Presupuestos Gratis"
 amenity_estimates_desc: "Traiga su vehículo para una consulta y cotización sin compromiso."
 amenity_materials_title: "Materiales de Calidad"
 amenity_materials_desc: "Usamos solo telas, cueros y espumas premium para resultados duraderos."
-amenity_shuttle_title: "Transporte Gratuito"
-amenity_shuttle_desc: "Servicio de transporte gratuito disponible en el centro de Jacksonville."
+# Mantener genérico: sin tasas, sin plazos, sin montos de pago mensual y sin
+# nombrar al proveedor de financiamiento. Ver la nota en i18n/en.yaml.
+amenity_financing_title: "Financiamiento Disponible"
+amenity_financing_desc: "Pague su proyecto a plazos — pregúntenos por las opciones de financiamiento al recibir su presupuesto."
 cta_heading: "¿Listo para Comenzar?"
 cta_body: "Contáctenos hoy para un presupuesto gratis en su próximo proyecto de tapicería."
 cta_contact: "Contáctenos"

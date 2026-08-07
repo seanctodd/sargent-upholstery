@@ -25,8 +25,12 @@ amenity_estimates_title: "Free Estimates"
 amenity_estimates_desc: "Bring your vehicle in for a no-obligation consultation and quote."
 amenity_materials_title: "Quality Materials"
 amenity_materials_desc: "We use only premium fabrics, leathers, and foams for lasting results."
-amenity_shuttle_title: "Complimentary Shuttle"
-amenity_shuttle_desc: "Free shuttle service available in downtown Jacksonville."
+# Keep this generic: no rates, no term lengths, no monthly payment amounts, and
+# no financing provider named. Those are what pull the copy into the providers'
+# marketing-approval programs and into TILA disclosure requirements. See
+# content/faq.md for the longer answer.
+amenity_financing_title: "Financing Available"
+amenity_financing_desc: "Pay over time for your project — ask us about financing options when you get your estimate."
 cta_heading: "Ready to Get Started?"
 cta_body: "Contact us today for a free estimate on your next upholstery project."
 cta_contact: "Contact Us"

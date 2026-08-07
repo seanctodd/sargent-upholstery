@@ -49,13 +49,15 @@
         <h3>{{ i18n "amenity_estimates_title" }}</h3>
         <p>{{ i18n "amenity_estimates_desc" }}</p>
       </div>
+      {{/* Keep this grid at exactly four tiles: .amenities-grid is repeat(4, 1fr),
+           so a fifth would orphan onto its own row. */}}
+      <div class="amenity">
+        <h3>{{ i18n "amenity_financing_title" }}</h3>
+        <p>{{ i18n "amenity_financing_desc" }}</p>
+      </div>
       <div class="amenity">
         <h3>{{ i18n "amenity_materials_title" }}</h3>
         <p>{{ i18n "amenity_materials_desc" }}</p>
-      </div>
-      <div class="amenity">
-        <h3>{{ i18n "amenity_shuttle_title" }}</h3>
-        <p>{{ i18n "amenity_shuttle_desc" }}</p>
       </div>
     </div>
   </div>

@@ -836,6 +836,25 @@ p {
   margin-top: 2rem;
 }
 
+/* Financing callout (estimate page) */
+.financing-callout {
+  background: var(--light-gray);
+  border-left: 4px solid var(--red);
+  padding: 1.5rem 1.75rem;
+  margin: 2rem 0;
+}
+
+/* Sentence case, matching .faq-item h3 and .contact-grid h3, which also opt out
+   of the global uppercase heading treatment. */
+.financing-callout h3 {
+  text-transform: none;
+  margin-bottom: 0.5rem;
+}
+
+.financing-callout p:last-child {
+  margin-bottom: 0;
+}
+
 /* ==========================================================================
    Footer
    ========================================================================== */
