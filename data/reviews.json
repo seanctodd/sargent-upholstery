@@ -1,5 +1,19 @@
 [
   {
+    "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOqkM4aL-QsoyjwLeuGOWVn-f0ettwWjv5SoqLBRXi5zK93flMXn7eznwV74sBI3d-zbLmK_09w",
+    "author": "Paul Waugh",
+    "rating": 5,
+    "text": "Exceptional experience.  Outstanding communication during the process of ordering a new convertible top and getting it installed.  Prices equal to what I found on-line.  Car completed on the promised date.  Very high quality workmanship.  Would strongly recommend.",
+    "date": "2026-08-20T21:04:35.456526Z"
+  },
+  {
+    "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOql2rJc8QSHimBVV3vP_OIQmjJ53GDwHDtNYZ2j2jvIebfk3hWUgul4QtCYmZbG4sM5HjTLp4Q",
+    "author": "Carol Barry",
+    "rating": 5,
+    "text": "Sargent Upholstery was awesome. Great communication, timely and fantastic job. They went the extra mile for me after I dropped it off and it needed extra repairs. They took care of it all. Highly recommend!!",
+    "date": "2026-08-20T19:07:02.744973Z"
+  },
+  {
     "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOqkb4aaKJf0AuCEJ6UeNT8yINzihf_zhOkkgem07ZRoMsCNfLMbr6MyS0Are2lbaWlSnfAjtVA",
     "author": "Mo",
     "rating": 5,
@@ -579,7 +593,8 @@
     "author": "Eno Esool",
     "rating": 5,
     "text": "Enrique and the guys at the shop were 100%  helped me recover a MX seat that Sargent Cycles, next door didn't want to cover.  If you got a MX seat and need a fresh seat cover.  Pick one up and bring it to Enrique at Sargent Upholstery on 1st street!",
-    "date": "2024-01-05T17:07:27.191259Z"
+    "date": "2024-01-05T17:07:27.191259Z",
+    "removed": "2026-08-24"
   },
   {
     "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOqn_2RFq5i7WMNe4dEmKV8Zeq-cgAsnbrs5epI06_xdYxZSbEKIYCSURR7yUAnj-ARtlm-257A",
