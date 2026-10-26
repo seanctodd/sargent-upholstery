@@ -1,5 +1,26 @@
 [
   {
+    "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOqkUgPwrFe2c-59eQUCu-MQwoA3fThBHMF0U3K8mHsc2fl52o8A2hN8MkHdDeK4603oDkmlM",
+    "author": "Richard Knecht",
+    "rating": 5,
+    "text": "This was my first time using Sargent Upholstery and I was very pleased!  They were able to reupholster a pair of bucket seats I had for a 1977 Blazer and make them look better than new.  The work was completed in a timely manner and at a fair price. I will most definitely be a repeat customer and highly recommend them.  Mike and his team are the best in the business.",
+    "date": "2026-10-24T18:17:45.009658Z"
+  },
+  {
+    "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOqlvKVYUXo6Zrx6Darwb-ZW2vqyrkO_xH_lxFknlXDbCq3zvlEnDIqz_lelf1eUBlZiWQDqQcA",
+    "author": "Josh Goodin",
+    "rating": 5,
+    "text": "Replaced the headliner in my truck and it looks amazing! The whole experience went smoothly from quote to the job being complete. I would highly recommend them for your upholstery project.",
+    "date": "2026-10-22T14:51:24.925528Z"
+  },
+  {
+    "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOqmPyXNlWXm4x6OoyFCkbh7qV7Mf_Kn8Tp9yo-qJzbh1cj75rIC3ww8jqx-4ULAF1p7I_brnIw",
+    "author": "Carole",
+    "rating": 5,
+    "text": "The gentlemen at Sargent were very pleasant , helpful and friendly. Although I was unable to have repairs done at this time (no fault of theirs) I truly appreciate the advice and recommendations provided. If and when I do need their service I will seek them first.",
+    "date": "2026-10-21T21:02:56.617782Z"
+  },
+  {
     "id": "accounts/108946701643555584595/locations/1582959559253733369/reviews/AbFvOqmkZZTvd7pezIRAxBjVANXPMgOVjs_D4SyIvjQSrK_bjK-E8Vdx9cmnDpR55-jLoHUfeuXGlg",
     "author": "Rick Shelton",
     "rating": 5,
@@ -362,7 +383,8 @@
     "author": "Brian Amescua",
     "rating": 5,
     "text": "Timely service, great price and a quality job! What more could you ask for? I highly recommend for all your upholstery needs.",
-    "date": "2025-10-25T18:02:50.454420Z"
+    "date": "2025-10-25T18:02:50.454420Z",
+    "removed": "2026-10-26"
   },
   {
     "id": "places/ChIJvQmmCSS35YgR-3H9ajzGCHk/reviews/Ci9DQUlRQUNvZENodHljRjlvT2pWRFRsZDJkbkZKT0RkNU5VbGtWMFJ6WVcxbWFHYxAB",
